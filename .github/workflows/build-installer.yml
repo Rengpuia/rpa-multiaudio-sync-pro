@@ -1,0 +1,81 @@
+name: Build Standalone Windows Installer
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore RPAMultiAudioSyncPro.csproj
+
+      - name: Build & Publish Release Executable
+        run: |
+          dotnet publish RPAMultiAudioSyncPro.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o bin\Release\net8.0-windows
+
+      - name: Digital Code Signing (Binary)
+        shell: powershell
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File cert\sign_binaries.ps1 -FilePath bin\Release\net8.0-windows\RPAMultiAudioSyncPro.exe
+
+      - name: Install Inno Setup Compiler
+        run: choco install innosetup --no-progress
+
+      - name: Compile Windows Installer with Inno Setup
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" RPAMultiAudioSyncPro_Setup.iss
+
+      - name: Digital Code Signing (Installer Setup)
+        shell: powershell
+        run: |
+          Get-ChildItem -Path "installer_output\*.exe", "..\installer_output\*.exe" -ErrorAction SilentlyContinue | ForEach-Object {
+            powershell.exe -NoProfile -ExecutionPolicy Bypass -File cert\sign_binaries.ps1 -FilePath $_.FullName
+          }
+
+      - name: Upload Installer Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RPAMultiAudioSyncPro_Setup_v2.4.2
+          path: |
+            installer_output\*.exe
+            ..\installer_output\*.exe
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: RPA MultiAudio Sync Pro v2.4.2
+          tag_name: v2.4.2
+          draft: false
+          prerelease: false
+          files: |
+            installer_output\*.exe
+            ..\installer_output\*.exe
+          body: |
+            ## RPA MultiAudio Sync Pro v2.4.2
+            **Developer**: K Vanlalrengpuia (rengakhiangte@gmail.com)
+
+            ### Highlights
+            - 🎬 **Cinema Mode Lip-Sync Engine**: Precision audio-delay synchronization for Bluetooth and wired headsets.
+            - 🎛️ **Dedicated Device Mixer**: Ear Separation Mode (Full Both Ears, Left-Ear Only, Right-Ear Only).
+            - ⚡ **0ms Ultra-Low Latency WASAPI Engine**: High-pass boost for competitive gaming.
+            - 🛡️ **Authenticode Signed**: Digitally signed by verified developer K Vanlalrengpuia to prevent Windows SmartScreen blocks.

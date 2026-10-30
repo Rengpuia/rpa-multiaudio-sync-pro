@@ -1,0 +1,17 @@
+# Build and Object Output
+[Bb]in/
+[Oo]bj/
+installer_output/
+*.user
+*.suo
+.vs/
+
+# System / OS
+Thumbs.db
+[Ee]hthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Logs
+*.log

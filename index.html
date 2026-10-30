@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPA MultiAudio Sync Pro (7.1 USB + Bluetooth Router)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            user-select: none;
+            box-sizing: border-box;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            background-color: #0b0e14;
+            background-image: 
+                radial-gradient(circle at 18% 50%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 30%, rgba(37, 99, 235, 0.18) 0%, transparent 50%),
+                radial-gradient(circle at 75% 80%, rgba(245, 158, 11, 0.10) 0%, transparent 45%),
+                linear-gradient(135deg, #090c12 0%, #111827 55%, #0d131f 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .win11-window {
+            background: rgba(24, 26, 32, 0.94);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 
+                0 25px 60px -15px rgba(0, 0, 0, 0.85),
+                0 0 40px 0 rgba(16, 185, 129, 0.08);
+        }
+
+        .toggle-track {
+            width: 48px;
+            height: 24px;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #2b303c;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            flex-shrink: 0;
+        }
+        .toggle-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #9ca3af;
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .toggle-emerald.active {
+            background: linear-gradient(90deg, #059669, #10b981);
+            border-color: #34d399;
+            box-shadow: 0 0 14px rgba(16, 185, 129, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+        }
+        .toggle-emerald.active .toggle-thumb {
+            transform: translateX(22px);
+            background: #ffffff;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+        }
+        .toggle-amber.active {
+            background: linear-gradient(90deg, #d97706, #f59e0b);
+            border-color: #fbbf24;
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+        }
+        .toggle-amber.active .toggle-thumb {
+            transform: translateX(22px);
+            background: #ffffff;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+        }
+        .toggle-gaming.active {
+            background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+            border-color: #67e8f9;
+            box-shadow: 0 0 16px rgba(6, 182, 212, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+        }
+        .toggle-gaming.active .toggle-thumb {
+            transform: translateX(22px);
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 1);
+        }
+
+        /* High Visibility Range Sliders */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 22px;
+            background: transparent;
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        input[type="range"]:focus {
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 9999px;
+            background: #1e2532;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+        }
+        .slider-emerald::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.35) 0%, #1e2532 100%);
+            border-color: rgba(52, 211, 153, 0.35);
+        }
+        .slider-amber::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.35) 0%, #1e2532 100%);
+            border-color: rgba(251, 191, 36, 0.35);
+        }
+        .slider-cyan::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, rgba(6, 182, 212, 0.35) 0%, #1e2532 100%);
+            border-color: rgba(6, 182, 212, 0.35);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            margin-top: -6px;
+            cursor: grab;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.25);
+        }
+        .slider-emerald::-webkit-slider-thumb {
+            background: #10b981;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.95), 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .slider-amber::-webkit-slider-thumb {
+            background: #f59e0b;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.95), 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .slider-cyan::-webkit-slider-thumb {
+            background: #06b6d4;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.95), 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 9999px;
+            background: #1e2532;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+        }
+        .slider-emerald::-moz-range-track {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.35) 0%, #1e2532 100%);
+            border-color: rgba(52, 211, 153, 0.35);
+        }
+        .slider-amber::-moz-range-track {
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.35) 0%, #1e2532 100%);
+            border-color: rgba(251, 191, 36, 0.35);
+        }
+        input[type="range"]::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            border: none;
+            cursor: grab;
+        }
+        .slider-emerald::-moz-range-thumb {
+            background: #10b981;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.95);
+        }
+        .slider-amber::-moz-range-thumb {
+            background: #f59e0b;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.95);
+        }
+
+        @keyframes radarSweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .radar-sweep {
+            background: conic-gradient(from 0deg, rgba(16, 185, 129, 0.38) 0deg, transparent 75deg, transparent 360deg);
+            animation: radarSweep 3.2s linear infinite;
+        }
+        .radar-node {
+            transition: all 0.15s ease;
+        }
+        .radar-node:hover, .radar-node.firing {
+            transform: scale(1.22);
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.95);
+            background: #10b981 !important;
+            color: #052e16 !important;
+            border-color: #a7f3d0 !important;
+        }
+
+        .clapper-target-hit {
+            box-shadow: 0 0 25px #fbbf24, inset 0 0 15px #f59e0b;
+            background: #ffffff !important;
+        }
+
+        .card-emerald-active {
+            border-color: rgba(16, 185, 129, 0.45) !important;
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(31, 34, 43, 0.9) 100%) !important;
+            box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.14);
+        }
+        .card-amber-active {
+            border-color: rgba(245, 158, 11, 0.5) !important;
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.10) 0%, rgba(35, 31, 28, 0.92) 100%) !important;
+            box-shadow: 0 4px 25px -2px rgba(245, 158, 11, 0.16);
+        }
+
+        .logo-glow {
+            filter: drop-shadow(0 0 18px rgba(16, 185, 129, 0.35)) drop-shadow(0 0 35px rgba(59, 130, 246, 0.25));
+        }
+
+        /* Flyout Menu Smooth Zero-Bleed Slide and Conceal */
+        .menu-flyout {
+            transform: translateX(calc(-100% - 64px));
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease, visibility 0.28s;
+        }
+        .menu-flyout.menu-open {
+            transform: translateX(0);
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* ========================================================
+           Windows 11 Dark Theme Custom Scrollbars (Universal & Device List)
+           ======================================================== */
+        /* Universal Browser Defaults */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(51, 65, 85, 0.7) rgba(15, 23, 42, 0.5);
+        }
+
+        /* WebKit / Chromium Scrollbar Theme */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 20, 28, 0.65);
+            border-radius: 9999px;
+            margin: 2px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a3447;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #10b981 0%, #06b6d4 100%);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.75);
+            border-color: rgba(52, 211, 153, 0.6);
+        }
+        ::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+
+        /* Enhanced Multiple Device List Scrollbar (.device-scrollbar) */
+        .device-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(52, 211, 153, 0.6) rgba(16, 22, 34, 0.85);
+        }
+        .device-scrollbar::-webkit-scrollbar {
+            width: 7px;
+        }
+        .device-scrollbar::-webkit-scrollbar-track {
+            background: linear-gradient(180deg, rgba(16, 22, 34, 0.9) 0%, rgba(13, 17, 26, 0.95) 100%);
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 4px 0;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        .device-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #243042 0%, #1a2230 100%);
+            border-radius: 9999px;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+        }
+        .device-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+            border-color: #6ee7b7;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.85);
+        }
+    </style>
+</head>
+<body class="text-slate-100 flex flex-col justify-between min-h-screen relative">
+
+    <!-- Main Desktop Area -->
+    <main class="flex-1 container mx-auto px-4 lg:px-8 py-5 flex flex-col xl:flex-row items-center justify-between gap-8 z-10">
+        
+        <!-- LEFT SIDE: RPA MultiAudio Sync Pro Brand & Mode Hub -->
+        <section class="w-full xl:w-5/12 flex flex-col justify-between space-y-5">
+            
+            <!-- Brand Badge Row -->
+            <div class="flex flex-wrap items-center gap-2.5">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/90 border border-emerald-500/30 w-fit shadow-lg">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span class="text-xs font-semibold tracking-wider uppercase text-emerald-300">WASAPI 3ms Engine</span>
+                </div>
+                <button id="btnGlobal71Toggle" class="px-3 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/50 text-emerald-300 text-xs font-bold flex items-center gap-2 shadow-lg transition">
+                    <span id="global71Dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span id="global71Label">7.1 SURROUND: ON</span>
+                </button>
+            </div>
+
+            <!-- Custom Vector Logo + Typography -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                <div class="relative flex-shrink-0 logo-glow">
+                    <svg width="140" height="140" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="waveGrad" x1="0" y1="100" x2="115" y2="100" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#10b981"/>
+                                <stop offset="55%" stop-color="#06b6d4"/>
+                                <stop offset="100%" stop-color="#3b82f6"/>
+                            </linearGradient>
+                            <linearGradient id="plugTopGrad" x1="115" y1="20" x2="115" y2="95" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#34d399"/>
+                                <stop offset="100%" stop-color="#06b6d4"/>
+                            </linearGradient>
+                            <linearGradient id="plugBotGrad" x1="115" y1="105" x2="115" y2="185" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#6366f1"/>
+                                <stop offset="50%" stop-color="#ec4899"/>
+                                <stop offset="100%" stop-color="#f97316"/>
+                            </linearGradient>
+                            <linearGradient id="btOrangeGrad" x1="135" y1="110" x2="185" y2="170" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#f59e0b"/>
+                                <stop offset="100%" stop-color="#ea580c"/>
+                            </linearGradient>
+                        </defs>
+
+                        <line x1="0" y1="100" x2="195" y2="100" stroke="#10b981" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="4 4"/>
+                        <path d="M8 100 H26 L34 78 L45 126 L58 52 L71 148 L84 35 L96 162 L106 100" stroke="url(#waveGrad)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M106 100 C114 100, 115 85, 115 68" stroke="url(#plugTopGrad)" stroke-width="7" stroke-linecap="round"/>
+                        <rect x="107" y="45" width="16" height="24" rx="3" fill="url(#plugTopGrad)"/>
+                        <rect x="110" y="32" width="10" height="11" rx="1.5" fill="#34d399"/>
+                        <path d="M112 20 L118 20 L120 29 L110 29 Z" fill="#a7f3d0"/>
+                        <path d="M106 100 C114 100, 115 115, 115 132" stroke="url(#plugBotGrad)" stroke-width="7" stroke-linecap="round"/>
+                        <rect x="107" y="131" width="16" height="24" rx="3" fill="url(#plugBotGrad)"/>
+                        <rect x="110" y="157" width="10" height="11" rx="1.5" fill="#f97316"/>
+                        <path d="M110 171 L120 171 L118 180 L112 180 Z" fill="#fed7aa"/>
+                        <path d="M123 95 H155 C168 95, 175 88, 175 78" stroke="#06b6d4" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+                        <path d="M123 105 H155 C168 105, 175 112, 175 122" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+                        <circle cx="158" cy="62" r="24" fill="#06b6d4" fill-opacity="0.18" stroke="#06b6d4" stroke-width="2.5"/>
+                        <path d="M150 51 L166 67 L158 75 V47 L166 55 L150 71" stroke="#22d3ee" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="158" cy="138" r="24" fill="url(#btOrangeGrad)" fill-opacity="0.22" stroke="#f59e0b" stroke-width="2.5"/>
+                        <path d="M150 127 L166 143 L158 151 V123 L166 131 L150 147" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+
+                <div class="space-y-1">
+                    <div class="inline-block px-2.5 py-0.5 rounded bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-400/40 text-emerald-300 font-black tracking-widest text-xs uppercase mb-1">
+                        RPA AUDIO LABS
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-none italic">
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-cyan-300 to-white">RPA MULTI</span><br/>
+                        <span class="text-white">AUDIO SYNC </span>
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-500 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">PRO</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- MODE SWITCHER TABS: [7.1 SURROUND GAMING] vs [🎬 CINEMA LIP-SYNC CALIBRATOR] -->
+            <div class="flex items-center gap-2 p-1 bg-slate-900/90 border border-slate-700 rounded-xl">
+                <button id="tabModeGaming" class="flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">
+                    <span>🎮</span> 7.1 Gaming Radar
+                </button>
+                <button id="tabModeCinema" class="flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 text-slate-400 hover:text-amber-300 hover:bg-white/5 border border-transparent">
+                    <span>🎬</span> Cinema Lip-Sync Hub
+                </button>
+            </div>
+
+            <!-- WIDGET 1: 7.1 POSITIONAL FOOTSTEP RADAR (GAMING MODE) -->
+            <div id="widgetGamingRadar" class="bg-[#131822]/90 border border-cyan-500/30 rounded-2xl p-3.5 shadow-xl space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                            7.1 Surround Positional Radar
+                        </h3>
+                        <p class="text-[11px] text-slate-400">Click speaker nodes to test directional spatial cues across headsets</p>
+                    </div>
+                    <button id="btnAutoSweepRadar" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-[11px] font-bold text-cyan-300 transition">
+                        360° Sweep
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <div class="relative w-32 h-32 rounded-full bg-slate-950 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-inner">
+                        <div class="radar-sweep absolute inset-0 rounded-full pointer-events-none"></div>
+                        <div class="absolute inset-3 rounded-full border border-emerald-500/15 pointer-events-none"></div>
+                        <div class="absolute w-full h-[1px] bg-emerald-500/15 pointer-events-none"></div>
+                        <div class="absolute h-full w-[1px] bg-emerald-500/15 pointer-events-none"></div>
+
+                        <button onclick="firePositionalNode('LFE', 'Subwoofer Bass (LFE)', 65)" id="node-LFE" class="radar-node z-10 w-7 h-7 rounded-full bg-amber-500/20 border border-amber-400/60 text-[9px] font-black text-amber-300 flex items-center justify-center" title="Test LFE Subwoofer">LFE</button>
+                        <button onclick="firePositionalNode('FC', 'Front Center (FC)', 520)" id="node-FC" class="radar-node absolute top-1 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-slate-800 border border-emerald-400/60 text-[8px] font-bold text-emerald-300">FC</button>
+                        <button onclick="firePositionalNode('FL', 'Front Left (FL)', 440)" id="node-FL" class="radar-node absolute top-3 left-3 w-5 h-5 rounded-full bg-slate-800 border border-emerald-400/60 text-[8px] font-bold text-emerald-300">FL</button>
+                        <button onclick="firePositionalNode('FR', 'Front Right (FR)', 660)" id="node-FR" class="radar-node absolute top-3 right-3 w-5 h-5 rounded-full bg-slate-800 border border-emerald-400/60 text-[8px] font-bold text-emerald-300">FR</button>
+                        <button onclick="firePositionalNode('SL', 'Side Left (SL)', 360)" id="node-SL" class="radar-node absolute top-1/2 -translate-y-1/2 left-1 w-5 h-5 rounded-full bg-slate-800 border border-cyan-400/60 text-[8px] font-bold text-cyan-300">SL</button>
+                        <button onclick="firePositionalNode('SR', 'Side Right (SR)', 580)" id="node-SR" class="radar-node absolute top-1/2 -translate-y-1/2 right-1 w-5 h-5 rounded-full bg-slate-800 border border-cyan-400/60 text-[8px] font-bold text-cyan-300">SR</button>
+                        <button onclick="firePositionalNode('BL', 'Back Left (BL)', 290)" id="node-BL" class="radar-node absolute bottom-2.5 left-3 w-5 h-5 rounded-full bg-slate-800 border border-purple-400/60 text-[8px] font-bold text-purple-300">BL</button>
+                        <button onclick="firePositionalNode('BR', 'Back Right (BR)', 490)" id="node-BR" class="radar-node absolute bottom-2.5 right-3 w-5 h-5 rounded-full bg-slate-800 border border-purple-400/60 text-[8px] font-bold text-purple-300">BR</button>
+                    </div>
+
+                    <div class="flex-1 space-y-2 w-full">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-slate-900/90 border border-white/10 rounded-lg p-2">
+                                <span class="text-[10px] uppercase text-slate-400 block">7.1 Channels</span>
+                                <span id="telemetry71Mode" class="text-xs font-bold mono text-emerald-400">8 Channels Active</span>
+                            </div>
+                            <div class="bg-slate-900/90 border border-white/10 rounded-lg p-2">
+                                <span class="text-[10px] uppercase text-slate-400 block">WASAPI Buffer</span>
+                                <span class="text-xs font-bold text-cyan-300 mono">3.2 ms Zero-Lag</span>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/90 border border-white/10 rounded-lg p-2 flex items-center justify-between">
+                            <div>
+                                <span class="text-[11px] font-semibold text-white block">Footstep EQ Presence</span>
+                                <span id="radarStatusText" class="text-[11px] text-emerald-400 mono">Ready — Click a 7.1 node</span>
+                            </div>
+                            <button id="btnFootstepBoost" class="px-2.5 py-1 rounded bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 text-[11px] font-bold">
+                                BOOST ON (+4dB)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WIDGET 2: CINEMA LIP-SYNC / AUDIO SYNC CALIBRATOR -->
+            <div id="widgetCinemaLipSync" class="hidden bg-gradient-to-br from-amber-950/40 via-slate-900/90 to-orange-950/30 border border-amber-500/40 rounded-2xl p-4 shadow-2xl space-y-3.5">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-500/20 pb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 text-sm">🎬</span>
+                        <div>
+                            <h3 class="text-xs sm:text-sm font-black text-amber-300 uppercase tracking-wide">
+                                Cinema Lip-Sync & Audio Match Engine
+                            </h3>
+                            <p class="text-[11px] text-slate-400">Align movie speech to lips & eliminate Bluetooth vs Wired audio echo</p>
+                        </div>
+                    </div>
+                    <span id="lipSyncBadgeStatus" class="px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/50 text-[11px] font-mono font-bold text-amber-300">
+                        150ms Synced
+                    </span>
+                </div>
+
+                <!-- Visual Clapper Flash Bar -->
+                <div class="bg-slate-950/90 border border-white/10 rounded-xl p-3 space-y-2">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span class="font-semibold text-slate-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                            Visual Lip-Sync Flash Meter (Watch marker hit center)
+                        </span>
+                        <span id="clapperFps" class="mono text-[11px] text-amber-400">60 FPS Calibrator</span>
+                    </div>
+
+                    <div class="relative h-10 bg-slate-900 border border-slate-700 rounded-lg overflow-hidden flex items-center px-2">
+                        <div class="absolute left-1/4 h-full w-[1px] bg-white/10"></div>
+                        <div class="absolute right-1/4 h-full w-[1px] bg-white/10"></div>
+                        <div id="clapperCenterMark" class="absolute left-1/2 -translate-x-1/2 w-4 h-full bg-amber-500/30 border-x-2 border-amber-400 flex items-center justify-center transition-all duration-75">
+                            <span class="text-[9px] mono font-bold text-amber-300">0ms</span>
+                        </div>
+                        <div id="clapperRunner" class="absolute top-1 bottom-1 w-3 rounded bg-gradient-to-b from-cyan-300 to-emerald-400 shadow-[0_0_12px_#38bdf8] transition-all"></div>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2 pt-1">
+                        <button id="btnPlayLipSyncBeep" class="flex-1 py-1.5 px-3 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 border border-amber-400/60 text-xs font-bold text-amber-300 flex items-center justify-center gap-2 transition">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/></svg>
+                            <span id="lipSyncBeepLabel">Run Lip-Sync Pulse (Flash + Beep)</span>
+                        </button>
+                        <button id="btnAutoMatchWired" class="py-1.5 px-3 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-xs font-bold text-emerald-300 flex items-center gap-1.5 transition" title="Automatically set USB/Wired headphones to exact same delay as Bluetooth so audio hits both listeners at the same millisecond">
+                            <span>🔗 Lock USB to BT</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lip-Sync Delay Slider -->
+                <div class="space-y-1.5 bg-slate-900/70 border border-white/5 rounded-xl p-3">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-amber-300 flex items-center gap-1.5">
+                            Cinema Audio Sync Offset:
+                        </span>
+                        <div class="flex items-center gap-1">
+                            <button onclick="nudgeCinemaDelay(-10)" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-white/10 text-xs mono text-slate-200 font-bold">-10ms</button>
+                            <button onclick="nudgeCinemaDelay(-1)" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-white/10 text-xs mono text-slate-200 font-bold">-1ms</button>
+                            <span id="labelCinemaDelay" class="text-xs mono font-black text-amber-300 bg-amber-950/90 border border-amber-400/60 px-2 py-0.5 rounded min-w-[62px] text-center shadow">150 ms</span>
+                            <button onclick="nudgeCinemaDelay(1)" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-white/10 text-xs mono text-slate-200 font-bold">+1ms</button>
+                            <button onclick="nudgeCinemaDelay(10)" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-white/10 text-xs mono text-slate-200 font-bold">+10ms</button>
+                        </div>
+                    </div>
+                    <div class="pt-1">
+                        <input id="sliderCinemaDelay" type="range" min="0" max="400" value="150" class="slider-amber">
+                    </div>
+                </div>
+
+                <!-- Latency Presets -->
+                <div class="space-y-1 text-xs">
+                    <span class="text-[11px] font-semibold text-slate-400 block uppercase">Hardware Presets:</span>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button onclick="applyCinemaPreset(50, 'Low-Latency aptX')" class="p-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-white/10 text-center transition">
+                            <span class="text-[10px] text-cyan-300 font-bold block">50ms</span>
+                            <span class="text-[9px] text-slate-400 block">aptX-LL</span>
+                        </button>
+                        <button onclick="applyCinemaPreset(130, 'Apple AAC / AirPods')" class="p-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-white/10 text-center transition">
+                            <span class="text-[10px] text-emerald-300 font-bold block">130ms</span>
+                            <span class="text-[9px] text-slate-400 block">AirPods/AAC</span>
+                        </button>
+                        <button onclick="applyCinemaPreset(160, 'Sony LDAC / Bose')" class="p-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-center transition">
+                            <span class="text-[10px] text-amber-300 font-bold block">160ms</span>
+                            <span class="text-[9px] text-amber-200 block">LDAC/WH1000</span>
+                        </button>
+                        <button onclick="applyCinemaPreset(220, 'Standard SBC / TV')" class="p-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-white/10 text-center transition">
+                            <span class="text-[10px] text-purple-300 font-bold block">220ms</span>
+                            <span class="text-[9px] text-slate-400 block">SBC / TV</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons: Spatial Pulse, Device Mixer, Settings & About -->
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button id="btnPlayDemoAudio" class="px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-600/80 text-xs font-semibold text-emerald-300 flex items-center gap-2 shadow-lg transition">
+                    <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z"/></svg>
+                    <span id="demoAudioLabel">Play Spatial Pulse</span>
+                </button>
+
+                <!-- NEW: DEVICE MIXER TRIGGER BUTTON -->
+                <button id="btnOpenMixerPrimary" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-600/30 to-blue-600/30 hover:from-cyan-600/50 hover:to-blue-600/50 border border-cyan-400/40 text-xs font-semibold text-white flex items-center gap-2 shadow-lg transition">
+                    <span>🎚️</span> Device Mixer & Ear Separation
+                </button>
+
+                <button id="btnOpenSettingsPrimary" class="px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-600/80 text-xs font-semibold text-slate-200 flex items-center gap-2 shadow-lg transition">
+                    <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Settings & About
+                </button>
+            </div>
+
+            <!-- Live Spectrum Equalizer Bars -->
+            <div class="pt-1">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                    <span class="uppercase tracking-wider font-semibold text-slate-400 flex items-center gap-2">
+                        <span id="eqDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        Real-Time 8-Channel Spectrum
+                    </span>
+                    <span id="eqStats" class="mono text-emerald-400 text-[11px]">48.0 kHz / 32-bit Float</span>
+                </div>
+                <div id="spectrumContainer" class="h-16 w-full bg-slate-900/70 border border-slate-800/90 rounded-xl p-2.5 flex items-end justify-between gap-1 overflow-hidden">
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT SIDE: Windows 11 App Window -->
+        <section class="w-full xl:w-7/12 flex justify-center">
+            <div class="win11-window w-full max-w-[700px] rounded-2xl overflow-hidden flex flex-col border border-slate-700/70 relative">
+                
+                <!-- Windows 11 Title Bar -->
+                <div class="h-11 bg-[#14161c] px-3 sm:px-4 flex items-center justify-between border-b border-white/5 select-none">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <!-- Top-Left Corner Menu Button with Menu Icon -->
+                        <button id="btnTitleMenu" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition cursor-pointer shadow-sm active:scale-95" title="Toggle Main Navigation Menu">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            <span>Menu</span>
+                        </button>
+                        <div class="h-4 w-px bg-white/10 hidden sm:block"></div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5" viewBox="0 0 32 32" fill="none">
+                                <path d="M3 16H7L10 9L14 23L18 6L21 20L23 16H29" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="25" cy="10" r="3" fill="#06b6d4"/>
+                                <circle cx="25" cy="22" r="3" fill="#f59e0b"/>
+                            </svg>
+                            <span class="text-xs sm:text-sm font-medium text-slate-200 tracking-wide">
+                                RPA MultiAudio Sync Pro <span class="text-slate-400 font-normal hidden md:inline">(7.1 USB + Bluetooth Router)</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center -mr-2">
+                        <button class="w-10 h-8 flex items-center justify-center text-slate-400 hover:bg-white/5 hover:text-white transition rounded">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M20 12H4"/></svg>
+                        </button>
+                        <button class="w-10 h-8 flex items-center justify-center text-slate-400 hover:bg-white/5 hover:text-white transition rounded">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1" stroke-width="2"/></svg>
+                        </button>
+                        <button class="w-10 h-8 flex items-center justify-center text-slate-400 hover:bg-rose-600 hover:text-white transition rounded">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Window Body with Sidebar + Content -->
+                <div class="flex flex-1 min-h-[540px] relative">
+                    
+                    <!-- Left Navigation Rail -->
+                    <div class="w-12 bg-[#161820]/90 border-r border-white/5 flex flex-col items-center justify-between py-4 z-20">
+                        <div class="flex flex-col items-center gap-3">
+                            <!-- HAMBURGER MENU BUTTON -->
+                            <button id="btnOpenMenu" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/25 border border-white/10 hover:border-emerald-400/50 text-slate-300 hover:text-emerald-300 transition shadow-md active:scale-95 group cursor-pointer" title="Toggle Main Menu (Esc to close)">
+                                <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            </button>
+                            <!-- Audio Router Icon -->
+                            <button class="p-2 rounded-lg bg-emerald-500/15 text-emerald-400 border-l-2 border-emerald-400 transition" title="Audio Router Master">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/></svg>
+                            </button>
+                            <!-- Device Mixer Icon -->
+                            <button id="btnSideMixer" class="p-2 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-white/5 transition" title="Device Mixer & Ear Separation">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                            </button>
+                            <!-- Cinema Lip-Sync Icon -->
+                            <button id="btnQuickSync" class="p-2 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 transition" title="Cinema Lip-Sync Calibrator">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </button>
+                        </div>
+                        <div class="flex flex-col items-center gap-3">
+                            <button id="btnNavSettings" class="p-2 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-white/5 transition" title="Settings & About">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Main Menu Backdrop Overlay -->
+                    <div id="menuBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-25 hidden transition-opacity duration-300 cursor-pointer"></div>
+
+                    <!-- SLIDE-OUT FLYOUT MAIN MENU (Organized Content) -->
+                    <div id="mainMenuFlyout" class="menu-flyout absolute top-0 bottom-0 left-12 w-72 bg-[#12151e]/98 backdrop-blur-xl border-r border-slate-700/80 shadow-2xl p-4 z-30 overflow-y-auto device-scrollbar space-y-4">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="p-1 rounded-md bg-emerald-500/20 text-emerald-400">🎛️</span>
+                                <div>
+                                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Main Navigation</h4>
+                                    <p class="text-[10px] text-slate-400">RPA Audio Engine v2.4.2</p>
+                                </div>
+                            </div>
+                            <button id="btnCloseMenu" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Menu Section 1: Audio Routing Profiles -->
+                        <div class="space-y-1.5 text-xs">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-1">Routing Profiles</span>
+                            <button onclick="applyGamingModeState(true); closeMenu();" class="w-full text-left px-3 py-2 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 text-cyan-200 font-semibold flex items-center justify-between transition">
+                                <span>⚡ Competitive 0ms Gaming</span>
+                                <span class="text-[10px] mono text-cyan-400">Active</span>
+                            </button>
+                            <button onclick="applyGamingModeState(false); closeMenu();" class="w-full text-left px-3 py-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/30 text-amber-200 font-semibold flex items-center justify-between transition">
+                                <span>🎬 Cinema Lip-Sync Hub</span>
+                                <span class="text-[10px] mono text-amber-400">150ms</span>
+                            </button>
+                        </div>
+
+                        <!-- Menu Section 2: Device Mixer & Ear Separation -->
+                        <div class="space-y-1.5 text-xs border-t border-white/10 pt-3">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-1">Audio Processing</span>
+                            <button id="menuItemMixer" class="w-full text-left px-3 py-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold flex items-center gap-2.5 transition">
+                                <span class="text-cyan-400">🎚️</span>
+                                <div>
+                                    <span class="block text-white">Device Mixer</span>
+                                    <span class="text-[10px] text-slate-400 block">Ear Separation (Both / L / R)</span>
+                                </div>
+                            </button>
+                            <button onclick="set71ChannelState(!is71ChannelGlobal); closeMenu();" class="w-full text-left px-3 py-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold flex items-center justify-between transition">
+                                <span>🔊 7.1 Surround Master</span>
+                                <span id="menu71Status" class="text-[10px] mono text-emerald-400">ON</span>
+                            </button>
+                            <button onclick="footstepBoost = !footstepBoost; updateStatusBar(); closeMenu();" class="w-full text-left px-3 py-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold flex items-center justify-between transition">
+                                <span>👣 Footstep High-Pass EQ</span>
+                                <span class="text-[10px] mono text-emerald-400">+4dB</span>
+                            </button>
+                        </div>
+
+                        <!-- Menu Section 3: Preset Management -->
+                        <div class="space-y-1.5 text-xs border-t border-white/10 pt-3">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-1">Quick Presets</span>
+                            <button onclick="resetAllDevices(); closeMenu();" class="w-full text-left px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition">
+                                ↺ Reset All Devices to Default
+                            </button>
+                            <button onclick="setCinemaLipSyncValue(150); closeMenu();" class="w-full text-left px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition">
+                                🔗 Auto-Lock Wired to BT Latency
+                            </button>
+                        </div>
+
+                        <!-- Menu Section 4: System & Developer -->
+                        <div class="space-y-1.5 text-xs border-t border-white/10 pt-3">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-1">System & About</span>
+                            <button onclick="openSettings(); closeMenu();" class="w-full text-left px-3 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-semibold flex items-center gap-2 transition">
+                                <span>⚙</span> Settings & Preferences
+                            </button>
+                            <div class="bg-black/30 rounded-lg p-2.5 border border-white/5 space-y-1 text-[11px]">
+                                <span class="text-slate-400 block">Developer:</span>
+                                <span class="text-white font-bold block">K Vanlalrengpuia</span>
+                                <span class="text-cyan-300 font-mono block text-[10px]">rengakhiangte@gmail.com</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Router Controls Area -->
+                    <div class="flex-1 p-4 sm:p-5 flex flex-col justify-between space-y-3 z-10">
+                        
+                        <!-- MODE HEADER BANNER -->
+                        <div id="gamingBanner" class="bg-gradient-to-r from-cyan-950/80 via-slate-900/90 to-purple-950/70 border border-cyan-400/50 rounded-xl p-3 shadow-lg transition-all duration-300">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div class="flex items-center gap-3">
+                                    <div id="toggleGamingMode" class="toggle-track toggle-gaming active" role="switch" aria-checked="true" title="Toggle Zero-Lag Gaming Mode vs Cinema Lip-Sync Mode">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span id="gamingModeTitle" class="text-xs sm:text-sm font-black tracking-wide text-cyan-300 uppercase">
+                                                ⚡ COMPETITIVE GAMING MODE: ON
+                                            </span>
+                                            <span id="gamingModeBadge" class="px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/50 text-[10px] font-bold mono text-cyan-200">
+                                                0ms ZERO-LAG USB
+                                            </span>
+                                        </div>
+                                        <p id="gamingModeDesc" class="text-[11px] text-slate-300">
+                                            Both 7.1 USB headsets locked to <strong class="text-emerald-300">0ms instant hardware response</strong>.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-1.5">
+                                    <button id="btnToggle71Mode" class="px-2.5 py-1 rounded-md bg-emerald-500/25 hover:bg-emerald-500/35 border border-emerald-400/60 text-[11px] font-bold text-emerald-300 transition flex items-center gap-1.5">
+                                        <span id="btn71Dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                        <span id="btn71Text">7.1 Mode: ON</span>
+                                    </button>
+                                    <button id="btnPresetGaming" class="px-2.5 py-1 rounded-md bg-cyan-500/25 hover:bg-cyan-500/35 border border-cyan-400/60 text-[11px] font-bold text-cyan-200 transition">
+                                        🎮 0ms Game
+                                    </button>
+                                    <button id="btnPresetCinema" class="px-2.5 py-1 rounded-md bg-amber-500/15 hover:bg-amber-500/30 border border-amber-400/40 text-[11px] font-bold text-amber-300 transition">
+                                        🎬 Cinema Lip-Sync
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Primary Capture Source Panel -->
+                        <div class="bg-[#1b2228]/95 border border-emerald-500/30 rounded-xl p-3 shadow-inner space-y-2.5">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <label class="text-xs font-semibold text-emerald-300 tracking-wide flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                    Primary Capture Source (WASAPI Loopback Master)
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <button id="btnAutoSyncHeader" class="px-2.5 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-300 text-[11px] font-bold tracking-wide flex items-center gap-1.5 shadow transition">
+                                        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        AUTO-LIP-SYNC (150ms)
+                                    </button>
+                                    <span id="headerChannelBadge" class="text-[11px] mono text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 rounded">
+                                        8-Ch 7.1 Native
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                                <div class="relative flex-1">
+                                    <select id="masterSelect" class="w-full bg-[#13171d] hover:bg-[#171c24] text-slate-100 text-xs sm:text-sm font-medium rounded-lg px-3.5 py-2.5 border border-white/10 focus:outline-none focus:border-emerald-400 transition appearance-none pr-9">
+                                        <option value="hyperx">HyperX Cloud II [7.1 USB Surround]</option>
+                                        <option value="corsair">Corsair Void Elite [7.1 Surround USB]</option>
+                                        <option value="vb">VB-Audio Virtual Cable [8-Ch 7.1 Master]</option>
+                                    </select>
+                                    <svg class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+
+                                <button id="btnToggleRouting" class="px-5 py-2.5 rounded-lg font-bold text-xs sm:text-sm tracking-wider uppercase transition-all shadow-lg bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 shadow-emerald-500/25 flex items-center justify-center gap-2">
+                                    <span id="routingIndicator" class="w-2 h-2 rounded-full bg-slate-950 animate-ping"></span>
+                                    <span id="btnToggleText">STOP ROUTING</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Device Cards Container -->
+                        <div class="space-y-3 max-h-[385px] overflow-y-auto pr-1.5 device-scrollbar" id="deviceCardsList">
+                            
+                            <!-- CARD 1: HyperX Cloud II [7.1 Surround] -->
+                            <div id="card-dev1" class="card-emerald-active rounded-xl p-3 border border-white/10 transition-all duration-200 space-y-2">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="toggle-track toggle-emerald active" data-dev="dev1" role="switch" aria-checked="true" title="Toggle Audio Output">
+                                            <div class="toggle-thumb"></div>
+                                        </div>
+                                        <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 18v-6a9 9 0 0118 0v6"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/></svg>
+                                        <div>
+                                            <span class="text-sm font-bold text-white">HyperX Cloud II</span>
+                                            <span id="badge71-dev1" class="text-xs font-semibold text-emerald-400 ml-1 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/25">[7.1 Surround]</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <button onclick="toggleDevice71('dev1')" id="btnDev71-dev1" class="px-2 py-1 rounded-md bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-[11px] font-bold text-emerald-300 transition">
+                                            7.1 ON
+                                        </button>
+                                        <button onclick="syncDeviceToBT('dev1', 0)" class="px-2 py-1 rounded-md bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-[11px] font-semibold text-cyan-300 transition">
+                                            0ms Game
+                                        </button>
+                                        <button onclick="syncDeviceToBT('dev1', cinemaLipSyncDelay)" id="syncbadge-dev1" class="px-2 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-[11px] font-semibold text-amber-300 transition">
+                                            Cinema Sync
+                                        </button>
+                                        <button onclick="resetDevice('dev1', 85, 0)" class="px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-slate-300 transition">
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Volume & Delay Controls -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                                    <div class="flex items-center gap-2 bg-slate-900/60 border border-white/10 rounded-lg px-2.5 py-1.5">
+                                        <span class="text-xs font-semibold text-slate-200 w-16 flex-shrink-0">Volume:</span>
+                                        <div class="flex-1 flex items-center">
+                                            <input id="vol-dev1" type="range" min="0" max="100" value="85" class="slider-emerald">
+                                        </div>
+                                        <span id="vol-label-dev1" class="text-xs mono font-bold text-white bg-slate-800 border border-emerald-400/40 px-2 py-0.5 rounded min-w-[45px] text-center shadow">85%</span>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 bg-emerald-950/40 border border-emerald-500/40 rounded-lg px-2.5 py-1.5">
+                                        <span class="text-xs font-bold text-emerald-300 w-14 flex-shrink-0">Delay:</span>
+                                        <div class="flex-1 flex items-center">
+                                            <input id="delay-dev1" type="range" min="0" max="500" value="0" class="slider-emerald">
+                                        </div>
+                                        <span id="delay-label-dev1" class="text-xs mono font-bold text-emerald-300 bg-emerald-950/90 border border-emerald-400/50 px-2 py-0.5 rounded min-w-[50px] text-center shadow">0 ms</span>
+                                    </div>
+                                </div>
+
+                                <!-- EAR SEPARATION MODE ROW -->
+                                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-900/50 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs">
+                                    <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                                        <span>👂</span> Ear Separation Mode:
+                                    </span>
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="setEarSeparation('dev1', 'both')" id="ear-both-dev1" class="px-2.5 py-1 rounded text-[11px] font-bold bg-cyan-500/25 border border-cyan-400/50 text-cyan-200 transition">
+                                            Full Both Ears
+                                        </button>
+                                        <button onclick="setEarSeparation('dev1', 'left')" id="ear-left-dev1" class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-800 border border-white/10 text-slate-400 hover:text-white transition">
+                                            L-Channel Left Ear
+                                        </button>
+                                        <button onclick="setEarSeparation('dev1', 'right')" id="ear-right-dev1" class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-800 border border-white/10 text-slate-400 hover:text-white transition">
+                                            R-Channel Right Ear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD 2: Corsair Void Elite [7.1 Surround] -->
+                            <div id="card-dev2" class="card-emerald-active rounded-xl p-3 border border-white/10 transition-all duration-200 space-y-2">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="toggle-track toggle-emerald active" data-dev="dev2" role="switch" aria-checked="true" title="Toggle Audio Output">
+                                            <div class="toggle-thumb"></div>
+                                        </div>
+                                        <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 18v-6a9 9 0 0118 0v6"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/></svg>
+                                        <div>
+                                            <span class="text-sm font-bold text-white">Corsair Void Elite</span>
+                                            <span id="badge71-dev2" class="text-xs font-semibold text-emerald-400 ml-1 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/25">[7.1 Surround]</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <button onclick="toggleDevice71('dev2')" id="btnDev71-dev2" class="px-2 py-1 rounded-md bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-[11px] font-bold text-emerald-300 transition">
+                                            7.1 ON
+                                        </button>
+                                        <button onclick="syncDeviceToBT('dev2', 0)" class="px-2 py-1 rounded-md bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-[11px] font-semibold text-cyan-300 transition">
+                                            0ms Game
+                                        </button>
+                                        <button onclick="syncDeviceToBT('dev2', cinemaLipSyncDelay)" id="syncbadge-dev2" class="px-2 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-[11px] font-semibold text-amber-300 transition">
+                                            Cinema Sync
+                                        </button>
+                                        <button onclick="resetDevice('dev2', 85, 0)" class="px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-slate-300 transition">
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                                    <div class="flex items-center gap-2 bg-slate-900/60 border border-white/10 rounded-lg px-2.5 py-1.5">
+                                        <span class="text-xs font-semibold text-slate-200 w-16 flex-shrink-0">Volume:</span>
+                                        <div class="flex-1 flex items-center">
+                                            <input id="vol-dev2" type="range" min="0" max="100" value="85" class="slider-emerald">
+                                        </div>
+                                        <span id="vol-label-dev2" class="text-xs mono font-bold text-white bg-slate-800 border border-emerald-400/40 px-2 py-0.5 rounded min-w-[45px] text-center shadow">85%</span>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 bg-emerald-950/40 border border-emerald-500/40 rounded-lg px-2.5 py-1.5">
+                                        <span class="text-xs font-bold text-emerald-300 w-14 flex-shrink-0">Delay:</span>
+                                        <div class="flex-1 flex items-center">
+                                            <input id="delay-dev2" type="range" min="0" max="500" value="0" class="slider-emerald">
+                                        </div>
+                                        <span id="delay-label-dev2" class="text-xs mono font-bold text-emerald-300 bg-emerald-950/90 border border-emerald-400/50 px-2 py-0.5 rounded min-w-[50px] text-center shadow">0 ms</span>
+                                    </div>
+                                </div>
+
+                                <!-- EAR SEPARATION MODE ROW -->
+                                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-900/50 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs">
+                                    <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                                        <span>👂</span> Ear Separation Mode:
+                                    </span>
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="setEarSeparation('dev2', 'both')" id="ear-both-dev2" class="px-2.5 py-1 rounded text-[11px] font-bold bg-cyan-500/25 border border-cyan-400/50 text-cyan-200 transition">
+                                            Full Both Ears
+                                        </button>
+                                        <button onclick="setEarSeparation('dev2', 'left')" id="ear-left-dev2" class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-800 border border-white/10 text-slate-400 hover:text-white transition">
+                                            L-Channel Left Ear
+                                        </button>
+                                        <button onclick="setEarSeparation('dev2', 'right')" id="ear-right-dev2" class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-800 border border-white/10 text-slate-400 hover:text-white transition">
+                                            R-Channel Right Ear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD 3: Sony WH-1000XM4 [2.0 Stereo Bluetooth] -->
+                            <div id="card-dev3" class="card-amber-active rounded-xl p-3 border border-white/10 transition-all duration-200 space-y-2">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="toggle-track toggle-amber active" data-dev="dev3" role="switch" aria-checked="true" title="Toggle Audio Output">
+                                            <div class="toggle-thumb"></div>
+                                        </div>
+                                        <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 18v-6a9 9 0 0118 0v6"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/></svg>
+                                        <div>
+                                            <span class="text-sm font-bold text-white">Sony WH-1000XM4</span>
+                                            <span class="text-xs font-semibold text-amber-400 ml-1 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/25">[Bluetooth A2DP]</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="px-2 py-1 rounded-md bg-amber-500/20 border border-amber-400/40 text-[11px] font-semibold text-amber-300">
+                                            BT Reference
+                                        </span>
+                                        <button onclick="resetDevice('dev3', 92, 0)" class="px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-slate-300 transition">
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                                    <div class="flex items-center gap-2 bg-slate-900/60 border border-white/10 rounded-lg px-2.5 py-1.5">
+                                        <span class="text-xs font-semibold text-slate-200 w-16 flex-shrink-0">Volume:</span>
+                                        <div class="flex-1 flex items-center">
+                                            <input id="vol-dev3" type="range" min="0" max="100" value="92" class="slider-amber">
+                                        </div>
+                                        <span id="vol-label-dev3" class="text-xs mono font-bold text-white bg-slate-800 border border-amber-400/40 px-2 py-0.5 rounded min-w-[45px] text-center shadow">92%</span>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 bg-amber-950/40 border border-amber-500/40 rounded-lg px-2.5 py-1.5">
+                                        <span class="text-xs font-bold text-amber-300 w-14 flex-shrink-0">Delay:</span>
+                                        <div class="flex-1 flex items-center">
+                                            <input id="delay-dev3" type="range" min="0" max="500" value="0" class="slider-amber">
+                                        </div>
+                                        <span id="delay-label-dev3" class="text-xs mono font-bold text-amber-300 bg-amber-950/90 border border-amber-400/50 px-2 py-0.5 rounded min-w-[50px] text-center shadow">0 ms</span>
+                                    </div>
+                                </div>
+
+                                <!-- EAR SEPARATION MODE ROW -->
+                                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-900/50 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs">
+                                    <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                                        <span>👂</span> Ear Separation Mode:
+                                    </span>
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="setEarSeparation('dev3', 'both')" id="ear-both-dev3" class="px-2.5 py-1 rounded text-[11px] font-bold bg-cyan-500/25 border border-cyan-400/50 text-cyan-200 transition">
+                                            Full Both Ears
+                                        </button>
+                                        <button onclick="setEarSeparation('dev3', 'left')" id="ear-left-dev3" class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-800 border border-white/10 text-slate-400 hover:text-white transition">
+                                            L-Channel Left Ear
+                                        </button>
+                                        <button onclick="setEarSeparation('dev3', 'right')" id="ear-right-dev3" class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-800 border border-white/10 text-slate-400 hover:text-white transition">
+                                            R-Channel Right Ear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Window Bottom Status Bar -->
+                        <div class="pt-2 border-t border-white/5 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
+                            <span id="appStatusBar" class="text-emerald-400 font-medium flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                Routing 3/3 active outputs — 7.1 Surround Processing Active
+                            </span>
+                            <span class="mono text-[11px] text-slate-500">RPA Engine v2.4.2</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Windows 11 Bottom Taskbar -->
+    <footer class="h-12 bg-[#0d1017]/90 backdrop-blur-md border-t border-white/10 px-6 flex items-center justify-between z-20">
+        <div class="text-xs text-slate-400 hidden sm:flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>RPA MultiAudio Driver: <strong class="text-slate-200">Active (Device Mixer & Ear Separation Ready)</strong></span>
+        </div>
+
+        <div class="flex items-center gap-3 mx-auto sm:mx-0">
+            <button class="p-2 rounded-lg hover:bg-white/10 transition" title="Windows 11 Start">
+                <svg class="w-5 h-5" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1" fill="#38bdf8"/><rect x="13" y="3" width="8" height="8" rx="1" fill="#0ea5e9"/><rect x="3" y="13" width="8" height="8" rx="1" fill="#0284c7"/><rect x="13" y="13" width="8" height="8" rx="1" fill="#0369a1"/></svg>
+            </button>
+            <button class="p-2 rounded-lg hover:bg-white/10 transition" title="File Explorer">
+                <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+            </button>
+            <button class="p-2 rounded-lg bg-white/10 border-b-2 border-emerald-400 transition" title="RPA MultiAudio Sync Pro">
+                <svg class="w-5 h-5" viewBox="0 0 32 32" fill="none"><path d="M3 16H7L10 9L14 23L18 6L21 20L23 16H29" stroke="#10b981" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button id="btnTaskbarMixer" class="p-2 rounded-lg hover:bg-white/10 transition text-slate-400 hover:text-cyan-300" title="Device Mixer">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+            </button>
+            <button id="btnTaskbarSettings" class="p-2 rounded-lg hover:bg-white/10 transition text-slate-400 hover:text-white" title="Settings">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+        </div>
+
+        <div class="hidden sm:flex items-center gap-3 text-xs text-slate-300 mono">
+            <span class="text-cyan-400">MIXER &amp; EAR SEPARATION</span>
+            <span id="clockTime">12:54 AM</span>
+        </div>
+    </footer>
+
+    <!-- DEVICE MIXER & EAR SEPARATION MODAL -->
+    <div id="mixerModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#141720] border border-cyan-500/40 rounded-2xl max-w-2xl w-full flex flex-col shadow-2xl overflow-hidden">
+            <div class="px-5 py-4 bg-[#1a1f2b] border-b border-slate-700 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Device Mixer & Ear Separation Hub</h3>
+                        <p class="text-xs text-slate-400">Configure stereo panning, isolated single-ear monitoring, and individual gains</p>
+                    </div>
+                </div>
+                <button id="btnCloseMixer" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="p-5 space-y-4 max-h-[75vh] overflow-y-auto device-scrollbar">
+                <!-- Info Banner -->
+                <div class="bg-cyan-950/40 border border-cyan-500/30 rounded-xl p-3 flex items-center justify-between text-xs text-cyan-200">
+                    <span class="flex items-center gap-2">
+                        <span>👂</span>
+                        <span><strong>Ear Separation Mode:</strong> Routes audio to Both Ears, Left Ear Only, or Right Ear Only per headset.</span>
+                    </span>
+                    <button onclick="testEarChirp()" class="px-2.5 py-1 rounded bg-cyan-500/25 hover:bg-cyan-500/40 border border-cyan-400/50 font-bold transition flex items-center gap-1">
+                        <span>🔔</span> Test L/R Chirp
+                    </button>
+                </div>
+
+                <!-- Device 1 Mixer Card -->
+                <div class="bg-slate-900/90 border border-white/10 rounded-xl p-3.5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-bold text-white flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                            HyperX Cloud II [7.1 USB]
+                        </span>
+                        <span id="mixerEarBadge-dev1" class="text-xs mono font-bold text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-500/40">
+                            Full Both Ears
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-xs">
+                        <button onclick="setEarSeparation('dev1', 'both')" class="py-2 px-2 rounded-lg font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 hover:bg-cyan-500/30 transition text-center">
+                            🎧 Both Ears (Full)
+                        </button>
+                        <button onclick="setEarSeparation('dev1', 'left')" class="py-2 px-2 rounded-lg font-bold bg-slate-800 text-slate-300 border border-white/10 hover:bg-slate-700 transition text-center">
+                            👂 Left Ear (L-Ch)
+                        </button>
+                        <button onclick="setEarSeparation('dev1', 'right')" class="py-2 px-2 rounded-lg font-bold bg-slate-800 text-slate-300 border border-white/10 hover:bg-slate-700 transition text-center">
+                            👂 Right Ear (R-Ch)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Device 2 Mixer Card -->
+                <div class="bg-slate-900/90 border border-white/10 rounded-xl p-3.5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-bold text-white flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                            Corsair Void Elite [7.1 USB]
+                        </span>
+                        <span id="mixerEarBadge-dev2" class="text-xs mono font-bold text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-500/40">
+                            Full Both Ears
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-xs">
+                        <button onclick="setEarSeparation('dev2', 'both')" class="py-2 px-2 rounded-lg font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 hover:bg-cyan-500/30 transition text-center">
+                            🎧 Both Ears (Full)
+                        </button>
+                        <button onclick="setEarSeparation('dev2', 'left')" class="py-2 px-2 rounded-lg font-bold bg-slate-800 text-slate-300 border border-white/10 hover:bg-slate-700 transition text-center">
+                            👂 Left Ear (L-Ch)
+                        </button>
+                        <button onclick="setEarSeparation('dev2', 'right')" class="py-2 px-2 rounded-lg font-bold bg-slate-800 text-slate-300 border border-white/10 hover:bg-slate-700 transition text-center">
+                            👂 Right Ear (R-Ch)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Device 3 Mixer Card -->
+                <div class="bg-slate-900/90 border border-white/10 rounded-xl p-3.5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-bold text-white flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                            Sony WH-1000XM4 [Bluetooth]
+                        </span>
+                        <span id="mixerEarBadge-dev3" class="text-xs mono font-bold text-amber-300 bg-amber-950 px-2 py-0.5 rounded border border-amber-500/40">
+                            Full Both Ears
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-xs">
+                        <button onclick="setEarSeparation('dev3', 'both')" class="py-2 px-2 rounded-lg font-bold bg-amber-500/20 text-amber-300 border border-amber-400/50 hover:bg-amber-500/30 transition text-center">
+                            🎧 Both Ears (Full)
+                        </button>
+                        <button onclick="setEarSeparation('dev3', 'left')" class="py-2 px-2 rounded-lg font-bold bg-slate-800 text-slate-300 border border-white/10 hover:bg-slate-700 transition text-center">
+                            👂 Left Ear (L-Ch)
+                        </button>
+                        <button onclick="setEarSeparation('dev3', 'right')" class="py-2 px-2 rounded-lg font-bold bg-slate-800 text-slate-300 border border-white/10 hover:bg-slate-700 transition text-center">
+                            👂 Right Ear (R-Ch)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-5 py-3 bg-[#181c26] border-t border-slate-700 flex items-center justify-between">
+                <span class="text-xs text-slate-400">Ear separation settings apply live instantly</span>
+                <button id="btnDoneMixer" class="px-4 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS & ABOUT MODAL -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#14171f] border border-slate-700/80 rounded-2xl max-w-2xl w-full flex flex-col shadow-2xl overflow-hidden">
+            <div class="px-5 py-4 bg-[#1a1e29] border-b border-slate-700 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Application Settings</h3>
+                        <p class="text-xs text-slate-400">Configure startup behavior, background routing, and view developer information</p>
+                    </div>
+                </div>
+                <button id="btnCloseSettings" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row min-h-[360px]">
+                <div class="w-full sm:w-52 bg-[#10131a] p-3 border-b sm:border-b-0 sm:border-r border-slate-700/60 flex sm:flex-col gap-1.5">
+                    <button id="tabBtnGeneral" class="w-full px-3.5 py-2.5 rounded-xl text-left text-xs sm:text-sm font-semibold flex items-center gap-2.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition">
+                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                        General Preferences
+                    </button>
+                    <button id="tabBtnAbout" class="w-full px-3.5 py-2.5 rounded-xl text-left text-xs sm:text-sm font-semibold flex items-center gap-2.5 text-slate-400 hover:text-white hover:bg-white/5 transition border border-transparent">
+                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        About Developer
+                    </button>
+                </div>
+
+                <div class="flex-1 p-5 overflow-y-auto device-scrollbar">
+                    <div id="tabContentGeneral" class="space-y-4">
+                        <div class="border-b border-white/5 pb-2">
+                            <h4 class="text-sm font-bold text-white">General Preferences</h4>
+                            <p class="text-xs text-slate-400">Manage automation and system integration</p>
+                        </div>
+
+                        <div class="bg-slate-900/80 border border-white/10 rounded-xl p-3.5 flex items-center justify-between gap-4">
+                            <div class="space-y-0.5">
+                                <span class="text-xs sm:text-sm font-semibold text-white block">Launch on Startup</span>
+                                <p class="text-[11px] text-slate-400">Automatically start RPA MultiAudio Sync Pro when Windows starts</p>
+                            </div>
+                            <div id="toggleStartup" class="toggle-track toggle-emerald active" role="switch" aria-checked="true" title="Toggle Launch on Startup">
+                                <div class="toggle-thumb"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/80 border border-white/10 rounded-xl p-3.5 flex items-center justify-between gap-4">
+                            <div class="space-y-0.5">
+                                <span class="text-xs sm:text-sm font-semibold text-white block">Run in Background</span>
+                                <p class="text-[11px] text-slate-400">Keep audio routing uninterrupted when window is minimized to System Tray</p>
+                            </div>
+                            <div id="toggleBackground" class="toggle-track toggle-emerald active" role="switch" aria-checked="true" title="Toggle Run in Background">
+                                <div class="toggle-thumb"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/80 border border-white/10 rounded-xl p-3.5 flex items-center justify-between gap-4">
+                            <div class="space-y-0.5">
+                                <span class="text-xs sm:text-sm font-semibold text-white block">Auto-Reconnect</span>
+                                <p class="text-[11px] text-slate-400">Instantly reconnect and resume stream when USB or Bluetooth headphones are connected</p>
+                            </div>
+                            <div id="toggleAutoReconnect" class="toggle-track toggle-emerald active" role="switch" aria-checked="true" title="Toggle Auto-Reconnect">
+                                <div class="toggle-thumb"></div>
+                            </div>
+                        </div>
+
+                        <div id="prefSaveNotice" class="text-[11px] text-emerald-400 flex items-center gap-1.5 mt-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            Preferences are saved automatically.
+                        </div>
+                    </div>
+
+                    <div id="tabContentAbout" class="hidden space-y-4">
+                        <div class="border-b border-white/5 pb-2">
+                            <h4 class="text-sm font-bold text-white">About RPA MultiAudio Sync Pro</h4>
+                            <p class="text-xs text-slate-400">System specifications and creator credentials</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-emerald-950/50 via-slate-900/90 to-cyan-950/40 border border-emerald-500/40 rounded-xl p-4 shadow-xl space-y-3">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-500 to-cyan-400 flex items-center justify-center text-slate-950 font-black text-lg shadow-lg">
+                                    KV
+                                </div>
+                                <div>
+                                    <h5 class="text-base font-black text-white">K Vanlalrengpuia</h5>
+                                    <a href="mailto:rengakhiangte@gmail.com" class="text-xs font-mono text-cyan-300 hover:text-cyan-200 hover:underline flex items-center gap-1.5 mt-0.5">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                                        rengakhiangte@gmail.com
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/10 text-xs">
+                                <div class="bg-slate-900/80 rounded-lg p-2 border border-white/5">
+                                    <span class="text-[10px] uppercase text-slate-400 block">Developer</span>
+                                    <span class="font-bold text-slate-200">K Vanlalrengpuia</span>
+                                </div>
+                                <div class="bg-slate-900/80 rounded-lg p-2 border border-white/5">
+                                    <span class="text-[10px] uppercase text-slate-400 block">Contact Email</span>
+                                    <span class="font-mono text-emerald-300 text-[11px] break-all">rengakhiangte@gmail.com</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 text-xs">
+                            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/50 border border-white/5">
+                                <span class="text-slate-400">Software Version</span>
+                                <span class="mono text-white font-semibold">v2.4.2 (Production Release)</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/50 border border-white/5">
+                                <span class="text-slate-400">Cinema Lip-Sync Engine</span>
+                                <span class="mono text-amber-400 font-semibold">Frame-Accurate Bluetooth &amp; Wired Match</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/50 border border-white/5">
+                                <span class="text-slate-400">Device Mixer Mode</span>
+                                <span class="mono text-cyan-300 font-semibold">Ear Separation (Both / L / R)</span>
+                            </div>
+                        </div>
+
+                        <p class="text-[11px] text-slate-400 leading-relaxed text-center pt-1">
+                            © 2026 RPA Audio Labs. Developed by <strong class="text-slate-200">K Vanlalrengpuia</strong>. All rights reserved.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-5 py-3 bg-[#161a23] border-t border-slate-700 flex items-center justify-between">
+                <span class="text-xs text-slate-400">RPA Audio Engine Settings</span>
+                <button id="btnDoneSettings" class="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let isRouting = true;
+        let isPlayingSynth = false;
+        let isGamingMode = true;
+        let is71ChannelGlobal = true;
+        let footstepBoost = true;
+        let synthLoop = null;
+        let synth = null;
+
+        let cinemaLipSyncDelay = 150;
+        let isClapperRunning = false;
+        let clapperInterval = null;
+
+        const userPreferences = {
+            launchOnStartup: true,
+            runInBackground: true,
+            autoReconnect: true
+        };
+
+        const devices = {
+            dev1: { enabled: true, volume: 85, delay: 0, type: 'emerald', is71: true, earMode: 'both', name: 'HyperX Cloud II' },
+            dev2: { enabled: true, volume: 85, delay: 0, type: 'emerald', is71: true, earMode: 'both', name: 'Corsair Void Elite' },
+            dev3: { enabled: true, volume: 92, delay: 0, type: 'amber',   is71: false, earMode: 'both', name: 'Sony WH-1000XM4' }
+        };
+
+        // --- Build Spectrum Analyzer Bars ---
+        const spectrumContainer = document.getElementById('spectrumContainer');
+        const barCount = 28;
+        const bars = [];
+
+        for (let i = 0; i < barCount; i++) {
+            const col = document.createElement('div');
+            col.className = 'flex-1 h-full flex flex-col justify-end';
+            const bar = document.createElement('div');
+            let colorClass = 'from-emerald-500 to-cyan-400';
+            if (i > 18) colorClass = 'from-amber-500 to-orange-400';
+            else if (i > 10) colorClass = 'from-cyan-500 to-blue-400';
+
+            bar.className = `w-full rounded-t bg-gradient-to-t ${colorClass} transition-all duration-100`;
+            bar.style.height = '18%';
+            col.appendChild(bar);
+            spectrumContainer.appendChild(col);
+            bars.push(bar);
+        }
+
+        function animateSpectrum() {
+            const activeCount = Object.values(devices).filter(d => d.enabled).length;
+            bars.forEach((bar, idx) => {
+                if (!isRouting || activeCount === 0) {
+                    bar.style.height = '6%';
+                    bar.style.opacity = '0.25';
+                } else {
+                    const wave = Math.sin(Date.now() / 180 + idx * 0.45) * 28 + 38;
+                    const jitter = Math.random() * (isPlayingSynth ? 35 : 18);
+                    const height = Math.min(98, Math.max(10, wave + jitter));
+                    bar.style.height = `${height}%`;
+                    bar.style.opacity = '0.92';
+                }
+            });
+        }
+        setInterval(animateSpectrum, 90);
+
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const clockEl = document.getElementById('clockTime');
+            if (clockEl) clockEl.textContent = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- EAR SEPARATION MODE LOGIC (Full Both Ears, L-Channel, R-Channel) ---
+        function setEarSeparation(devKey, mode) {
+            const dev = devices[devKey];
+            if (!dev) return;
+            dev.earMode = mode;
+
+            // Update Device Card Buttons
+            ['both', 'left', 'right'].forEach(m => {
+                const btn = document.getElementById(`ear-${m}-${devKey}`);
+                if (btn) {
+                    if (m === mode) {
+                        btn.className = 'px-2.5 py-1 rounded text-[11px] font-bold bg-cyan-500/25 border border-cyan-400/50 text-cyan-200 transition shadow';
+                    } else {
+                        btn.className = 'px-2.5 py-1 rounded text-[11px] font-bold bg-slate-800 border border-white/10 text-slate-400 hover:text-white transition';
+                    }
+                }
+            });
+
+            // Update Mixer Modal Badge if exists
+            const badge = document.getElementById(`mixerEarBadge-${devKey}`);
+            if (badge) {
+                if (mode === 'both') badge.textContent = 'Full Both Ears';
+                else if (mode === 'left') badge.textContent = 'L-Channel Left Ear';
+                else if (mode === 'right') badge.textContent = 'R-Channel Right Ear';
+            }
+
+            updateStatusBar();
+        }
+
+        // Test L/R Chirp to hear ear isolation
+        async function testEarChirp() {
+            try { await Tone.start(); } catch(e) {}
+            // Play Left Ear Beep
+            const pannerL = new Tone.Panner(-1.0).toDestination();
+            const synthL = new Tone.Synth().connect(pannerL);
+            synthL.triggerAttackRelease(550, '16n');
+            setTimeout(() => {
+                synthL.dispose();
+                pannerL.dispose();
+                // Play Right Ear Beep after 350ms
+                const pannerR = new Tone.Panner(1.0).toDestination();
+                const synthR = new Tone.Synth().connect(pannerR);
+                synthR.triggerAttackRelease(880, '16n');
+                setTimeout(() => { synthR.dispose(); pannerR.dispose(); }, 350);
+            }, 350);
+        }
+
+        // --- SLIDE-OUT MENU DRAWER & CORNER MENU LOGIC ---
+        const mainMenuFlyout = document.getElementById('mainMenuFlyout');
+        const menuBackdrop = document.getElementById('menuBackdrop');
+        const btnOpenMenu = document.getElementById('btnOpenMenu');
+        const btnTitleMenu = document.getElementById('btnTitleMenu');
+        const btnCloseMenu = document.getElementById('btnCloseMenu');
+
+        let isMenuDrawerOpen = false;
+
+        const openMenu = () => {
+            isMenuDrawerOpen = true;
+            mainMenuFlyout.classList.add('menu-open');
+            if (menuBackdrop) menuBackdrop.classList.remove('hidden');
+            btnOpenMenu?.classList.add('bg-emerald-500/30', 'border-emerald-400', 'text-white', 'ring-2', 'ring-emerald-400/40');
+            btnTitleMenu?.classList.add('bg-emerald-500/30', 'border-emerald-400', 'text-white', 'ring-1', 'ring-emerald-400/40');
+            const menu71Status = document.getElementById('menu71Status');
+            if (menu71Status) menu71Status.textContent = is71ChannelGlobal ? 'ON' : 'OFF';
+        };
+
+        const closeMenu = () => {
+            isMenuDrawerOpen = false;
+            mainMenuFlyout.classList.remove('menu-open');
+            if (menuBackdrop) menuBackdrop.classList.add('hidden');
+            btnOpenMenu?.classList.remove('bg-emerald-500/30', 'border-emerald-400', 'text-white', 'ring-2', 'ring-emerald-400/40');
+            btnTitleMenu?.classList.remove('bg-emerald-500/30', 'border-emerald-400', 'text-white', 'ring-1', 'ring-emerald-400/40');
+        };
+
+        const toggleMenu = () => {
+            if (isMenuDrawerOpen) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        };
+
+        btnOpenMenu?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMenu();
+        });
+
+        btnTitleMenu?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMenu();
+        });
+
+        btnCloseMenu?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeMenu();
+        });
+
+        menuBackdrop?.addEventListener('click', closeMenu);
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isMenuDrawerOpen) {
+                closeMenu();
+            }
+        });
+
+        // --- DEVICE MIXER MODAL LOGIC ---
+        const mixerModal = document.getElementById('mixerModal');
+        const openMixer = () => { mixerModal.classList.remove('hidden'); mixerModal.classList.add('flex'); };
+        const closeMixer = () => { mixerModal.classList.add('hidden'); mixerModal.classList.remove('flex'); };
+
+        document.getElementById('btnOpenMixerPrimary').addEventListener('click', openMixer);
+        document.getElementById('btnSideMixer').addEventListener('click', openMixer);
+        document.getElementById('btnTaskbarMixer').addEventListener('click', openMixer);
+        document.getElementById('menuItemMixer').addEventListener('click', () => { closeMenu(); openMixer(); });
+        document.getElementById('btnCloseMixer').addEventListener('click', closeMixer);
+        document.getElementById('btnDoneMixer').addEventListener('click', closeMixer);
+        mixerModal.addEventListener('click', (e) => { if (e.target === mixerModal) closeMixer(); });
+
+        // --- 7.1 CHANNEL MASTER TOGGLE LOGIC ---
+        const btnGlobal71Toggle = document.getElementById('btnGlobal71Toggle');
+        const global71Dot = document.getElementById('global71Dot');
+        const global71Label = document.getElementById('global71Label');
+        const btnToggle71Mode = document.getElementById('btnToggle71Mode');
+        const btn71Dot = document.getElementById('btn71Dot');
+        const btn71Text = document.getElementById('btn71Text');
+        const telemetry71Mode = document.getElementById('telemetry71Mode');
+        const headerChannelBadge = document.getElementById('headerChannelBadge');
+
+        function set71ChannelState(enabled) {
+            is71ChannelGlobal = enabled;
+            if (is71ChannelGlobal) {
+                global71Label.textContent = '7.1 SURROUND: ON';
+                global71Dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                btnGlobal71Toggle.className = 'px-3 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/50 text-emerald-300 text-xs font-bold flex items-center gap-2 shadow-lg transition';
+
+                btn71Text.textContent = '7.1 Mode: ON';
+                btn71Dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                btnToggle71Mode.className = 'px-2.5 py-1 rounded-md bg-emerald-500/25 hover:bg-emerald-500/30 border border-emerald-400/60 text-[11px] font-bold text-emerald-300 transition flex items-center gap-1.5';
+
+                telemetry71Mode.textContent = '8 Channels Active';
+                telemetry71Mode.className = 'text-xs font-bold mono text-emerald-400';
+                headerChannelBadge.textContent = '8-Ch 7.1 Native';
+                headerChannelBadge.className = 'text-[11px] mono text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 rounded';
+            } else {
+                global71Label.textContent = '7.1 SURROUND: OFF';
+                global71Dot.className = 'w-2 h-2 rounded-full bg-slate-500';
+                btnGlobal71Toggle.className = 'px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 text-xs font-bold flex items-center gap-2 shadow transition';
+
+                btn71Text.textContent = '7.1 Mode: OFF (2.0)';
+                btn71Dot.className = 'w-2 h-2 rounded-full bg-slate-500';
+                btnToggle71Mode.className = 'px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] font-bold text-slate-300 transition flex items-center gap-1.5';
+
+                telemetry71Mode.textContent = '2.0 Stereo Direct';
+                telemetry71Mode.className = 'text-xs font-bold mono text-amber-300';
+                headerChannelBadge.textContent = '2-Ch Stereo Pass';
+                headerChannelBadge.className = 'text-[11px] mono text-amber-300 bg-amber-950/80 border border-amber-500/30 px-2 py-0.5 rounded';
+            }
+            updateStatusBar();
+        }
+
+        btnGlobal71Toggle.addEventListener('click', () => set71ChannelState(!is71ChannelGlobal));
+        btnToggle71Mode.addEventListener('click', () => set71ChannelState(!is71ChannelGlobal));
+
+        function toggleDevice71(devKey) {
+            const dev = devices[devKey];
+            if (!dev) return;
+            dev.is71 = !dev.is71;
+            const btn = document.getElementById(`btnDev71-${devKey}`);
+            const badge = document.getElementById(`badge71-${devKey}`);
+            if (dev.is71) {
+                btn.textContent = '7.1 ON';
+                btn.className = 'px-2 py-1 rounded-md bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-[11px] font-bold text-emerald-300 transition';
+                badge.textContent = '[7.1 Surround]';
+                badge.className = 'text-xs font-semibold text-emerald-400 ml-1 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/25';
+            } else {
+                btn.textContent = '7.1 OFF';
+                btn.className = 'px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-white/10 text-[11px] font-bold text-slate-400 transition';
+                badge.textContent = '[2.0 Downmix]';
+                badge.className = 'text-xs font-semibold text-slate-400 ml-1 bg-slate-800 px-1.5 py-0.5 rounded border border-white/10';
+            }
+            updateStatusBar();
+        }
+
+        // --- MODE TABS SWITCHER: GAMING RADAR vs CINEMA LIP-SYNC ---
+        const tabModeGaming = document.getElementById('tabModeGaming');
+        const tabModeCinema = document.getElementById('tabModeCinema');
+        const widgetGamingRadar = document.getElementById('widgetGamingRadar');
+        const widgetCinemaLipSync = document.getElementById('widgetCinemaLipSync');
+
+        function switchLeftHubMode(mode) {
+            if (mode === 'cinema') {
+                tabModeCinema.className = 'flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 bg-amber-500/25 text-amber-300 border border-amber-400/50 shadow';
+                tabModeGaming.className = 'flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 text-slate-400 hover:text-white hover:bg-white/5 border border-transparent';
+                widgetGamingRadar.classList.add('hidden');
+                widgetCinemaLipSync.classList.remove('hidden');
+            } else {
+                tabModeGaming.className = 'flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 bg-cyan-500/20 text-cyan-300 border border-cyan-400/40';
+                tabModeCinema.className = 'flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 text-slate-400 hover:text-amber-300 hover:bg-white/5 border border-transparent';
+                widgetCinemaLipSync.classList.add('hidden');
+                widgetGamingRadar.classList.remove('hidden');
+            }
+        }
+
+        tabModeGaming.addEventListener('click', () => switchLeftHubMode('gaming'));
+        tabModeCinema.addEventListener('click', () => switchLeftHubMode('cinema'));
+
+        // --- CINEMA LIP-SYNC CONTROLS & VISUAL CLAPPER ---
+        const sliderCinemaDelay = document.getElementById('sliderCinemaDelay');
+        const labelCinemaDelay = document.getElementById('labelCinemaDelay');
+        const lipSyncBadgeStatus = document.getElementById('lipSyncBadgeStatus');
+        const clapperRunner = document.getElementById('clapperRunner');
+        const clapperCenterMark = document.getElementById('clapperCenterMark');
+        const btnPlayLipSyncBeep = document.getElementById('btnPlayLipSyncBeep');
+        const lipSyncBeepLabel = document.getElementById('lipSyncBeepLabel');
+        const btnAutoMatchWired = document.getElementById('btnAutoMatchWired');
+
+        function setCinemaLipSyncValue(ms) {
+            cinemaLipSyncDelay = Math.min(400, Math.max(0, ms));
+            sliderCinemaDelay.value = cinemaLipSyncDelay;
+            labelCinemaDelay.textContent = `${cinemaLipSyncDelay} ms`;
+            lipSyncBadgeStatus.textContent = `${cinemaLipSyncDelay}ms Synced`;
+
+            syncDeviceToBT('dev1', cinemaLipSyncDelay);
+            syncDeviceToBT('dev2', cinemaLipSyncDelay);
+            syncDeviceToBT('dev3', 0);
+
+            updateStatusBar();
+        }
+
+        sliderCinemaDelay.addEventListener('input', () => {
+            setCinemaLipSyncValue(parseInt(sliderCinemaDelay.value, 10));
+        });
+
+        function nudgeCinemaDelay(delta) {
+            setCinemaLipSyncValue(cinemaLipSyncDelay + delta);
+        }
+
+        function applyCinemaPreset(ms, name) {
+            setCinemaLipSyncValue(ms);
+            const notice = document.getElementById('prefSaveNotice');
+            notice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Applied preset: ${name} (${ms}ms)`;
+        }
+
+        btnAutoMatchWired.addEventListener('click', () => {
+            setCinemaLipSyncValue(cinemaLipSyncDelay);
+            btnAutoMatchWired.classList.add('bg-emerald-500/40');
+            setTimeout(() => btnAutoMatchWired.classList.remove('bg-emerald-500/40'), 400);
+        });
+
+        async function runSingleClapperTest() {
+            try { await Tone.start(); } catch(e) {}
+            let startTime = performance.now();
+            const duration = 1200;
+
+            function animateClapper(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(1, elapsed / duration);
+                const posPercent = progress * 94;
+                clapperRunner.style.left = `${posPercent}%`;
+
+                if (progress >= 0.49 && progress <= 0.53) {
+                    clapperCenterMark.classList.add('clapper-target-hit');
+                    playCalibrationBeep();
+                } else {
+                    clapperCenterMark.classList.remove('clapper-target-hit');
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateClapper);
+                } else {
+                    clapperRunner.style.left = '4%';
+                    clapperCenterMark.classList.remove('clapper-target-hit');
+                }
+            }
+            requestAnimationFrame(animateClapper);
+        }
+
+        function playCalibrationBeep() {
+            try {
+                const beepSynth = new Tone.Synth({
+                    oscillator: { type: 'sine' },
+                    envelope: { attack: 0.002, decay: 0.08, sustain: 0, release: 0.05 }
+                }).toDestination();
+                beepSynth.volume.value = -8;
+                beepSynth.triggerAttackRelease(880, '32n');
+                setTimeout(() => beepSynth.dispose(), 150);
+            } catch(e) {}
+        }
+
+        btnPlayLipSyncBeep.addEventListener('click', () => {
+            if (!isClapperRunning) {
+                isClapperRunning = true;
+                lipSyncBeepLabel.textContent = 'Stop Clapper Loop';
+                btnPlayLipSyncBeep.classList.add('bg-amber-500/40');
+                runSingleClapperTest();
+                clapperInterval = setInterval(runSingleClapperTest, 1400);
+            } else {
+                isClapperRunning = false;
+                lipSyncBeepLabel.textContent = 'Run Lip-Sync Pulse (Flash + Beep)';
+                btnPlayLipSyncBeep.classList.remove('bg-amber-500/40');
+                clearInterval(clapperInterval);
+            }
+        });
+
+        // --- Sliding Toggle Switch Logic ---
+        document.querySelectorAll('.toggle-track[data-dev]').forEach(track => {
+            track.addEventListener('click', () => {
+                const devKey = track.getAttribute('data-dev');
+                if (!devKey || !devices[devKey]) return;
+                const dev = devices[devKey];
+                dev.enabled = !dev.enabled;
+
+                track.classList.toggle('active', dev.enabled);
+                track.setAttribute('aria-checked', dev.enabled);
+
+                const card = document.getElementById(`card-${devKey}`);
+                if (dev.enabled) {
+                    card.classList.add(dev.type === 'emerald' ? 'card-emerald-active' : 'card-amber-active');
+                    card.style.opacity = '1';
+                } else {
+                    card.classList.remove('card-emerald-active', 'card-amber-active');
+                    card.style.opacity = '0.55';
+                }
+
+                updateStatusBar();
+            });
+        });
+
+        // --- Volume & Delay Sliders ---
+        ['dev1', 'dev2', 'dev3'].forEach(devKey => {
+            const volSlider = document.getElementById(`vol-${devKey}`);
+            const volLabel = document.getElementById(`vol-label-${devKey}`);
+            const delaySlider = document.getElementById(`delay-${devKey}`);
+            const delayLabel = document.getElementById(`delay-label-${devKey}`);
+
+            volSlider.addEventListener('input', () => {
+                devices[devKey].volume = parseInt(volSlider.value, 10);
+                volLabel.textContent = `${volSlider.value}%`;
+            });
+
+            delaySlider.addEventListener('input', () => {
+                devices[devKey].delay = parseInt(delaySlider.value, 10);
+                delayLabel.textContent = `${delaySlider.value} ms`;
+                updateStatusBar();
+            });
+        });
+
+        // --- Gaming Mode Toggle & Cinema Presets ---
+        const toggleGamingMode = document.getElementById('toggleGamingMode');
+        const gamingModeTitle = document.getElementById('gamingModeTitle');
+        const gamingModeBadge = document.getElementById('gamingModeBadge');
+        const gamingModeDesc = document.getElementById('gamingModeDesc');
+
+        function applyGamingModeState(enableGaming) {
+            isGamingMode = enableGaming;
+            toggleGamingMode.classList.toggle('active', isGamingMode);
+            toggleGamingMode.setAttribute('aria-checked', isGamingMode);
+
+            if (isGamingMode) {
+                gamingModeTitle.textContent = '⚡ COMPETITIVE GAMING MODE: ON';
+                gamingModeBadge.textContent = '0ms ZERO-LAG USB';
+                gamingModeDesc.innerHTML = 'Both 7.1 USB headsets locked to <strong class="text-emerald-300">0ms instant hardware response</strong>.';
+                syncDeviceToBT('dev1', 0);
+                syncDeviceToBT('dev2', 0);
+                switchLeftHubMode('gaming');
+            } else {
+                gamingModeTitle.textContent = '🎬 CINEMA LIP-SYNC / AUDIO SYNC ACTIVE';
+                gamingModeBadge.textContent = `${cinemaLipSyncDelay}ms SYNC MATCH`;
+                gamingModeDesc.innerHTML = `USB/Wired headsets delayed <strong class="text-amber-300">${cinemaLipSyncDelay}ms</strong> to match Bluetooth latency &amp; screen lips.`;
+                setCinemaLipSyncValue(cinemaLipSyncDelay);
+                switchLeftHubMode('cinema');
+            }
+            updateStatusBar();
+        }
+
+        toggleGamingMode.addEventListener('click', () => applyGamingModeState(!isGamingMode));
+        document.getElementById('btnPresetGaming').addEventListener('click', () => applyGamingModeState(true));
+        document.getElementById('btnPresetCinema').addEventListener('click', () => applyGamingModeState(false));
+
+        // --- 7.1 Surround Footstep Radar Tester (with Ear Separation Support) ---
+        async function firePositionalNode(code, label, freq) {
+            try { await Tone.start(); } catch(e) {}
+            const nodeBtn = document.getElementById(`node-${code}`);
+            if (nodeBtn) {
+                nodeBtn.classList.add('firing');
+                setTimeout(() => nodeBtn.classList.remove('firing'), 320);
+            }
+
+            document.getElementById('radarStatusText').textContent = `Fired: ${label} @ ${ devices.dev1.delay }ms`;
+
+            // Compute pan taking into account ear separation
+            let panVal = code.includes('L') ? -0.85 : (code.includes('R') ? 0.85 : 0);
+            if (devices.dev1.earMode === 'left') panVal = -1.0;
+            else if (devices.dev1.earMode === 'right') panVal = 1.0;
+
+            const panner = new Tone.Panner(panVal).toDestination();
+            const ping = new Tone.Synth({
+                oscillator: { type: code === 'LFE' ? 'sine' : 'triangle' },
+                envelope: { attack: 0.005, decay: 0.14, sustain: 0, release: 0.1 }
+            }).connect(panner);
+            ping.volume.value = footstepBoost ? -6 : -12;
+            ping.triggerAttackRelease(freq, '16n');
+            setTimeout(() => { ping.dispose(); panner.dispose(); }, 350);
+        }
+
+        document.getElementById('btnAutoSweepRadar').addEventListener('click', async () => {
+            const order = [
+                ['FC', 'Front Center (FC)', 520],
+                ['FR', 'Front Right (FR)', 660],
+                ['SR', 'Side Right (SR)', 580],
+                ['BR', 'Back Right (BR)', 490],
+                ['LFE', 'Subwoofer Bass (LFE)', 65],
+                ['BL', 'Back Left (BL)', 290],
+                ['SL', 'Side Left (SL)', 360],
+                ['FL', 'Front Left (FL)', 440]
+            ];
+            for (let i = 0; i < order.length; i++) {
+                setTimeout(() => firePositionalNode(order[i][0], order[i][1], order[i][2]), i * 240);
+            }
+        });
+
+        const btnFootstepBoost = document.getElementById('btnFootstepBoost');
+        btnFootstepBoost.addEventListener('click', () => {
+            footstepBoost = !footstepBoost;
+            btnFootstepBoost.textContent = footstepBoost ? 'BOOST ON (+4dB)' : 'BOOST OFF (FLAT)';
+            btnFootstepBoost.className = footstepBoost
+                ? 'px-2.5 py-1 rounded bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 text-[11px] font-bold'
+                : 'px-2.5 py-1 rounded bg-slate-800 border border-white/10 text-slate-400 text-[11px] font-bold';
+        });
+
+        function nudgeDelay(devKey, delta) {
+            const delaySlider = document.getElementById(`delay-${devKey}`);
+            const nextVal = Math.min(500, Math.max(0, parseInt(delaySlider.value, 10) + delta));
+            delaySlider.value = nextVal;
+            delaySlider.dispatchEvent(new Event('input'));
+        }
+
+        function syncDeviceToBT(devKey, targetMs) {
+            const delaySlider = document.getElementById(`delay-${devKey}`);
+            delaySlider.value = targetMs;
+            delaySlider.dispatchEvent(new Event('input'));
+        }
+
+        function resetDevice(devKey, defaultVol, defaultDelay) {
+            const volSlider = document.getElementById(`vol-${devKey}`);
+            const delaySlider = document.getElementById(`delay-${devKey}`);
+            volSlider.value = defaultVol;
+            delaySlider.value = defaultDelay;
+            volSlider.dispatchEvent(new Event('input'));
+            delaySlider.dispatchEvent(new Event('input'));
+            setEarSeparation(devKey, 'both');
+        }
+
+        function resetAllDevices() {
+            resetDevice('dev1', 85, 0);
+            resetDevice('dev2', 85, 0);
+            resetDevice('dev3', 92, 0);
+        }
+
+        // --- Master Routing Start/Stop ---
+        const btnToggleRouting = document.getElementById('btnToggleRouting');
+        const btnToggleText = document.getElementById('btnToggleText');
+        const routingIndicator = document.getElementById('routingIndicator');
+        const eqDot = document.getElementById('eqDot');
+
+        btnToggleRouting.addEventListener('click', () => {
+            isRouting = !isRouting;
+            if (isRouting) {
+                btnToggleText.textContent = 'STOP ROUTING';
+                btnToggleRouting.className = 'px-5 py-2.5 rounded-lg font-bold text-xs sm:text-sm tracking-wider uppercase transition-all shadow-lg bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 shadow-emerald-500/25 flex items-center justify-center gap-2';
+                routingIndicator.className = 'w-2 h-2 rounded-full bg-slate-950 animate-ping';
+                eqDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+            } else {
+                btnToggleText.textContent = 'START ROUTING';
+                btnToggleRouting.className = 'px-5 py-2.5 rounded-lg font-bold text-xs sm:text-sm tracking-wider uppercase transition-all shadow-lg bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center gap-2';
+                routingIndicator.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                eqDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+            }
+            updateStatusBar();
+        });
+
+        function updateStatusBar() {
+            const statusBar = document.getElementById('appStatusBar');
+            const activeDevs = Object.values(devices).filter(d => d.enabled);
+
+            if (!isRouting) {
+                statusBar.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> <span class="text-slate-400">Engine Paused — Click START ROUTING to resume stream</span>`;
+                return;
+            }
+            if (activeDevs.length === 0) {
+                statusBar.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span> <span class="text-amber-300">No headphones enabled — Toggle at least one switch</span>`;
+                return;
+            }
+
+            const modeLabel = isGamingMode ? '0ms Gaming' : `Cinema Lip-Sync (${cinemaLipSyncDelay}ms)`;
+            const earSummary = devices.dev1.earMode !== 'both' ? `[Ear: ${devices.dev1.earMode.toUpperCase()}]` : '[Full Both Ears]';
+            statusBar.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Routing ${activeDevs.length}/3 outputs [${modeLabel}] ${earSummary} — USB: ${devices.dev1.delay}ms | BT: ${devices.dev3.delay}ms`;
+        }
+
+        const triggerCinemaLipSync = () => applyGamingModeState(false);
+        document.getElementById('btnQuickSync').addEventListener('click', triggerCinemaLipSync);
+        document.getElementById('btnAutoSyncHeader').addEventListener('click', triggerCinemaLipSync);
+
+        // --- Demo Spatial Audio Pulse ---
+        const btnPlayDemoAudio = document.getElementById('btnPlayDemoAudio');
+        const demoAudioLabel = document.getElementById('demoAudioLabel');
+
+        btnPlayDemoAudio.addEventListener('click', async () => {
+            try { await Tone.start(); } catch(e) {}
+            if (!isPlayingSynth) {
+                isPlayingSynth = true;
+                demoAudioLabel.textContent = 'Stop Spatial Pulse';
+                btnPlayDemoAudio.classList.add('border-emerald-400', 'bg-emerald-950/60');
+
+                synth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: 'triangle' },
+                    envelope: { attack: 0.03, decay: 0.2, sustain: 0.2, release: 0.8 }
+                }).toDestination();
+                synth.volume.value = -12;
+
+                const notes = ['C4', 'E4', 'G4', 'B4', 'D5', 'G4', 'E4', 'C4'];
+                let idx = 0;
+                synthLoop = setInterval(() => {
+                    if (isRouting) {
+                        synth.triggerAttackRelease(notes[idx % notes.length], '16n');
+                        idx++;
+                    }
+                }, 260);
+            } else {
+                isPlayingSynth = false;
+                demoAudioLabel.textContent = 'Play Spatial Pulse';
+                btnPlayDemoAudio.classList.remove('border-emerald-400', 'bg-emerald-950/60');
+                clearInterval(synthLoop);
+                if (synth) synth.dispose();
+            }
+        });
+
+        // --- SETTINGS & ABOUT MODAL ---
+        const settingsModal = document.getElementById('settingsModal');
+        const openSettings = () => { settingsModal.classList.remove('hidden'); settingsModal.classList.add('flex'); };
+        const closeSettings = () => { settingsModal.classList.add('hidden'); settingsModal.classList.remove('flex'); };
+
+        document.getElementById('btnNavSettings').addEventListener('click', openSettings);
+        document.getElementById('btnOpenSettingsPrimary').addEventListener('click', openSettings);
+        document.getElementById('btnTaskbarSettings').addEventListener('click', openSettings);
+        document.getElementById('btnCloseSettings').addEventListener('click', closeSettings);
+        document.getElementById('btnDoneSettings').addEventListener('click', closeSettings);
+        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettings(); });
+
+        const tabBtnGeneral = document.getElementById('tabBtnGeneral');
+        const tabBtnAbout = document.getElementById('tabBtnAbout');
+        const tabContentGeneral = document.getElementById('tabContentGeneral');
+        const tabContentAbout = document.getElementById('tabContentAbout');
+
+        tabBtnGeneral.addEventListener('click', () => {
+            tabBtnGeneral.className = 'w-full px-3.5 py-2.5 rounded-xl text-left text-xs sm:text-sm font-semibold flex items-center gap-2.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition';
+            tabBtnAbout.className = 'w-full px-3.5 py-2.5 rounded-xl text-left text-xs sm:text-sm font-semibold flex items-center gap-2.5 text-slate-400 hover:text-white hover:bg-white/5 transition border border-transparent';
+            tabContentGeneral.classList.remove('hidden');
+            tabContentAbout.classList.add('hidden');
+        });
+
+        tabBtnAbout.addEventListener('click', () => {
+            tabBtnAbout.className = 'w-full px-3.5 py-2.5 rounded-xl text-left text-xs sm:text-sm font-semibold flex items-center gap-2.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition';
+            tabBtnGeneral.className = 'w-full px-3.5 py-2.5 rounded-xl text-left text-xs sm:text-sm font-semibold flex items-center gap-2.5 text-slate-400 hover:text-white hover:bg-white/5 transition border border-transparent';
+            tabContentAbout.classList.remove('hidden');
+            tabContentGeneral.classList.add('hidden');
+        });
+
+        function setupPrefToggle(toggleId, prefKey) {
+            const toggleEl = document.getElementById(toggleId);
+            toggleEl.addEventListener('click', () => {
+                userPreferences[prefKey] = !userPreferences[prefKey];
+                toggleEl.classList.toggle('active', userPreferences[prefKey]);
+                toggleEl.setAttribute('aria-checked', userPreferences[prefKey]);
+
+                const notice = document.getElementById('prefSaveNotice');
+                notice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Saved: ${prefKey} is now ${userPreferences[prefKey] ? 'Enabled' : 'Disabled'}`;
+                setTimeout(() => {
+                    notice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Preferences are saved automatically.`;
+                }, 2000);
+            });
+        }
+        setupPrefToggle('toggleStartup', 'launchOnStartup');
+        setupPrefToggle('toggleBackground', 'runInBackground');
+        setupPrefToggle('toggleAutoReconnect', 'autoReconnect');
+    </script>
+</body>
+</html>

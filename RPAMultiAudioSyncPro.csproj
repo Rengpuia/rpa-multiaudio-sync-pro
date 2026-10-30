@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationTitle>RPA MultiAudio Sync Pro</ApplicationTitle>
+    <RootNamespace>RPAMultiAudioSyncPro</RootNamespace>
+    <AssemblyName>RPAMultiAudioSyncPro</AssemblyName>
+    <Version>2.4.0</Version>
+    <Authors>RPA Audio Labs</Authors>
+    <Description>Multi-Headphone 7.1 USB + Bluetooth Real-Time Audio Router for Windows</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+
+</Project>

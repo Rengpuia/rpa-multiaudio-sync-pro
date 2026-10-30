@@ -1,0 +1,153 @@
+<svg width="1000" height="300" viewBox="0 0 1000 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="bgGlowEmerald" cx="20%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bgGlowBlue" cx="80%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bgLinear" x1="0" y1="0" x2="1000" y2="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#090d14"/>
+      <stop offset="50%" stop-color="#111724"/>
+      <stop offset="100%" stop-color="#0c111a"/>
+    </linearGradient>
+
+    <!-- Logo Gradients -->
+    <linearGradient id="waveGrad" x1="20" y1="150" x2="180" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="50%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="plugTopGrad" x1="180" y1="60" x2="180" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="plugBotGrad" x1="180" y1="150" x2="180" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="50%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="btOrangeGrad" x1="210" y1="180" x2="270" y2="250" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+
+    <!-- Text Gradients -->
+    <linearGradient id="textGradMulti" x1="0" y1="0" x2="350" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="60%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="textGradPro" x1="0" y1="0" x2="150" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+
+    <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1000" height="300" rx="16" fill="url(#bgLinear)" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+  <rect width="1000" height="300" rx="16" fill="url(#bgGlowEmerald)"/>
+  <rect width="1000" height="300" rx="16" fill="url(#bgGlowBlue)"/>
+
+  <!-- Left Accent Tech Lines -->
+  <line x1="0" y1="150" x2="300" y2="150" stroke="#10b981" stroke-opacity="0.18" stroke-width="1.5" stroke-dasharray="6 6"/>
+  <circle cx="240" cy="90" r="45" fill="#06b6d4" fill-opacity="0.05" stroke="#06b6d4" stroke-opacity="0.2"/>
+  <circle cx="240" cy="210" r="45" fill="#f59e0b" fill-opacity="0.05" stroke="#f59e0b" stroke-opacity="0.2"/>
+
+  <!-- ==================== LEFT ICON MARK ==================== -->
+  <g transform="translate(30, 25)" filter="url(#glowEffect)">
+    <!-- Dynamic Soundwave -->
+    <path d="M15 125 H40 L50 95 L65 160 L85 60 L105 190 L125 40 L142 205 L158 125" 
+          stroke="url(#waveGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Split Branches -->
+    <path d="M158 125 C170 125, 172 105, 172 85" stroke="url(#plugTopGrad)" stroke-width="8" stroke-linecap="round"/>
+    <rect x="162" y="55" width="20" height="30" rx="4" fill="url(#plugTopGrad)"/>
+    <rect x="166" y="38" width="12" height="15" rx="2" fill="#34d399"/>
+    <path d="M168 24 L176 24 L179 35 L165 35 Z" fill="#a7f3d0"/>
+
+    <path d="M158 125 C170 125, 172 145, 172 165" stroke="url(#plugBotGrad)" stroke-width="8" stroke-linecap="round"/>
+    <rect x="162" y="165" width="20" height="30" rx="4" fill="url(#plugBotGrad)"/>
+    <rect x="166" y="198" width="12" height="15" rx="2" fill="#f97316"/>
+    <path d="M166 215 L178 215 L175 226 L169 226 Z" fill="#fed7aa"/>
+
+    <!-- Nodes Curves -->
+    <path d="M182 118 H220 C238 118, 245 108, 245 92" stroke="#06b6d4" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+    <path d="M182 132 H220 C238 132, 245 142, 245 158" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+
+    <!-- 7.1 Surround Badge -->
+    <circle cx="245" cy="75" r="28" fill="#06b6d4" fill-opacity="0.2" stroke="#06b6d4" stroke-width="3"/>
+    <text x="245" y="81" font-family="'Inter', sans-serif" font-weight="900" font-size="14" fill="#22d3ee" text-anchor="middle">7.1</text>
+
+    <!-- Bluetooth Sync Badge -->
+    <circle cx="245" cy="175" r="28" fill="url(#btOrangeGrad)" fill-opacity="0.25" stroke="#f59e0b" stroke-width="3"/>
+    <path d="M239 165 L252 178 L246 184 V162 L252 168 L239 181" stroke="#fbbf24" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- ==================== RIGHT TYPOGRAPHY ==================== -->
+  <g transform="translate(350, 0)">
+    
+    <!-- Top Pill Badge -->
+    <g transform="translate(0, 42)">
+      <rect width="210" height="24" rx="12" fill="#134e4a" fill-opacity="0.6" stroke="#2dd4bf" stroke-width="1.2"/>
+      <circle cx="14" cy="12" r="4" fill="#34d399"/>
+      <text x="26" y="16" font-family="'JetBrains Mono', 'Segoe UI', monospace" font-size="10.5" font-weight="700" fill="#a7f3d0" letter-spacing="1.5">WINDOWS STANDALONE</text>
+    </g>
+
+    <!-- Main Title -->
+    <g transform="translate(0, 110)">
+      <text font-family="'Inter', -apple-system, 'Segoe UI', sans-serif" font-weight="900" font-style="italic" font-size="44" letter-spacing="-1">
+        <tspan fill="url(#textGradMulti)">RPA MULTI</tspan>
+        <tspan fill="#ffffff">AUDIO</tspan>
+        <tspan fill="#ffffff"> SYNC </tspan>
+        <tspan fill="url(#textGradPro)">PRO</tspan>
+      </text>
+    </g>
+
+    <!-- Subtitle -->
+    <text x="2" y="152" font-family="'Inter', -apple-system, 'Segoe UI', sans-serif" font-weight="600" font-size="15" fill="#94a3b8" letter-spacing="0.5">
+      7.1 USB Surround + Bluetooth Dual-Stream Low-Latency Audio Router
+    </text>
+
+    <!-- Tech Badges -->
+    <g transform="translate(0, 178)">
+      <rect x="0" y="0" width="135" height="24" rx="6" fill="#042f2e" stroke="#14b8a6" stroke-width="1"/>
+      <text x="67" y="16" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#5eead4" text-anchor="middle">WASAPI 3ms ⚡</text>
+
+      <rect x="145" y="0" width="155" height="24" rx="6" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+      <text x="222" y="16" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#a5b4fc" text-anchor="middle">8-CH 7.1 DISCRETE</text>
+
+      <rect x="310" y="0" width="165" height="24" rx="6" fill="#451a03" stroke="#f59e0b" stroke-width="1"/>
+      <text x="392" y="16" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#fde68a" text-anchor="middle">BT DELAY SYNC (150ms)</text>
+
+      <rect x="485" y="0" width="130" height="24" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <text x="550" y="16" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#cbd5e1" text-anchor="middle">RING-3 SAFE ✓</text>
+    </g>
+
+    <!-- Footer Developer Line -->
+    <g transform="translate(0, 240)">
+      <line x1="0" y1="0" x2="615" y2="0" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <text x="2" y="22" font-family="'Inter', 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#e2e8f0">
+        Developer: <tspan fill="#34d399" font-weight="700">K Vanlalrengpuia</tspan>
+      </text>
+      <text x="235" y="22" font-family="'JetBrains Mono', monospace" font-size="11.5" fill="#67e8f9">
+        • rengakhiangte@gmail.com
+      </text>
+      <text x="615" y="22" font-family="'JetBrains Mono', monospace" font-size="11" fill="#64748b" text-anchor="end">
+        v2.4.2 Installer Edition
+      </text>
+    </g>
+
+  </g>
+</svg>
