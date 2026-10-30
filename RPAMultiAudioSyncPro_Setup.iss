@@ -24,9 +24,9 @@ Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
 
-; Custom Installer Logo & Banner Assets
-WizardImageFile=assets\installer_logo.png
-WizardSmallImageFile=assets\installer_logo.png
+; Custom Installer Logo & Banner Assets (Genuine 24-bit Bitmaps)
+WizardImageFile=assets\wizard_large.bmp
+WizardSmallImageFile=assets\wizard_small.bmp
 SetupIconFile=assets\app_icon.ico
 
 [Languages]
