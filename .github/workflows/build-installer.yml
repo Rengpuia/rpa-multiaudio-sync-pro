@@ -39,13 +39,24 @@ jobs:
         run: choco install innosetup --no-progress
 
       - name: Compile Windows Installer with Inno Setup
+        shell: powershell
         run: |
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" RPAMultiAudioSyncPro_Setup.iss
+          New-Item -ItemType Directory -Path "installer_output" -Force | Out-Null
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            $iscc = "C:\Program Files\Inno Setup 6\ISCC.exe"
+          }
+          if (-not (Test-Path $iscc)) {
+            $cmd = Get-Command iscc -ErrorAction SilentlyContinue
+            if ($cmd) { $iscc = $cmd.Source }
+          }
+          Write-Host "Using Inno Setup Compiler: $iscc"
+          & "$iscc" RPAMultiAudioSyncPro_Setup.iss
 
       - name: Digital Code Signing (Installer Setup)
         shell: powershell
         run: |
-          Get-ChildItem -Path "installer_output\*.exe", "..\installer_output\*.exe" -ErrorAction SilentlyContinue | ForEach-Object {
+          Get-ChildItem -Path "installer_output\*.exe" -ErrorAction SilentlyContinue | ForEach-Object {
             powershell.exe -NoProfile -ExecutionPolicy Bypass -File cert\sign_binaries.ps1 -FilePath $_.FullName
           }
 
@@ -53,9 +64,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: RPAMultiAudioSyncPro_Setup_v2.4.2
-          path: |
-            installer_output\*.exe
-            ..\installer_output\*.exe
+          path: installer_output\*.exe
           if-no-files-found: error
           retention-days: 30
 
@@ -67,9 +76,7 @@ jobs:
           tag_name: v2.4.2
           draft: false
           prerelease: false
-          files: |
-            installer_output\*.exe
-            ..\installer_output\*.exe
+          files: installer_output\*.exe
           body: |
             ## RPA MultiAudio Sync Pro v2.4.2
             **Developer**: K Vanlalrengpuia (rengakhiangte@gmail.com)

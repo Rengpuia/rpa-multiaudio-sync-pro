@@ -18,15 +18,11 @@ AppPublisherURL=mailto:rengakhiangte@gmail.com
 DefaultDirName={autopf}\RPAMultiAudioSyncPro
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-OutputDir=..\installer_output
+OutputDir=installer_output
 OutputBaseFilename=RPAMultiAudioSyncPro_Setup_v2.4.2
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
-
-; Digital Code Signing & Anti-Block Directives
-SignTool=powershell.exe -NoProfile -ExecutionPolicy Bypass -File "{#SourcePath}\cert\sign_binaries.ps1" -Target "$f"
-SignedUninstaller=yes
 
 ; Custom Installer Logo & Banner Assets
 WizardImageFile=assets\installer_logo.png
@@ -42,8 +38,8 @@ Name: "startupicon"; Description: "Launch RPA MultiAudio Sync Pro automatically 
 
 [Files]
 Source: "bin\Release\net8.0-windows\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\Release\net8.0-windows\*.dll"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "bin\Release\net8.0-windows\*.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\Release\net8.0-windows\*.dll"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist recursesubdirs createallsubdirs
+Source: "bin\Release\net8.0-windows\*.json"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "index.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "README.md"; DestDir: "{app}"; Flags: isreadme
